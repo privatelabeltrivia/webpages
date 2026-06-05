@@ -393,9 +393,10 @@
         if (!response.ok) {
           throw new Error(`API returned status ${response.status}`);
         }
-
+        toggleLoading(true);
         appData = await response.json();
         renderPage(appData);
+        toggleLoading(false);
         console.log('Data received from Apps Script:', appData);
       } catch (error) {
         console.error('Failed to fetch form data:', error);
