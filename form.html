@@ -484,6 +484,7 @@
       if (!overlay) return;
 
       if (show) {
+        console.log('Show Loading');
         overlay.style.display = 'flex';
         overlay.style.opacity = '1';
         
@@ -493,6 +494,7 @@
         }, duration);
         
       } else {
+        console.log('Hide Loading');
         overlay.style.transition = "opacity 0.5s ease";
         overlay.style.opacity = "0";
         setTimeout(() => {
