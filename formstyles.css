@@ -537,7 +537,8 @@ button[type="button"] {
   width: 100%;
 }
 
-.success-logo {
+.success-logo,
+.overlay-logo {
   max-width: 90%;
   margin-bottom: 20px;
   border-radius: 8px;
