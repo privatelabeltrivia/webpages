@@ -1,759 +1,919 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+  <head>
+    <base target="_top" />
+    <link rel="stylesheet" href="formstyles.css" />
+  </head>
 
-<head>
-  <base target="_top">
-  <link rel="stylesheet" href="formstyles.css">
-</head>
-
-<body>
-
-  <!-- NEW: Loading Overlay placed at the very top -->
-  <div id="loading-overlay" class="loading-overlay">
-    <img id="loading-logo" class="overlay-logo">
-  </div>
-
-  <div class="container">
-    <!-- STICKY TOP SECTION (Venue + Round Title) -->
-
-    <div class="header">
-        <img id="header-logo" class="header-logo"> 
-        <h1 id="venue-name" class="venue-name"></h1>
+  <body>
+    <!-- NEW: Loading Overlay placed at the very top -->
+    <div id="loading-overlay" class="loading-overlay">
+      <img id="loading-logo" class="overlay-logo" />
     </div>
 
-    <div class="sticky-header-bar">
-      <div id="team-name-display" class="team-name-display"></div>
+    <div class="container">
+      <!-- STICKY TOP SECTION (Venue + Round Title) -->
+
+      <div class="header">
+        <img id="header-logo" class="header-logo" />
+        <h1 id="venue-name" class="venue-name"></h1>
+      </div>
+
+      <div class="sticky-header-bar">
+        <div id="team-name-display" class="team-name-display"></div>
         <div id="round-title-container" class="round-title-container">
           <div class="title-container">
             <span id="round-title" class="round-title-label"></span>
             <span id="badge-double" class="badge-double">2x Points</span>
           </div>
         </div>
-      
-    </div>
-
-    <div id="accessibility-bar" class="accessibility-toolbar">
-      <label for="fontSizeSelector">Font Size:</label>
-      <select id="fontSizeSelector" class="accessibility-select" onchange="updateFontSize(this.value)">
-        <option value="size-small">Small</option>
-        <option value="size-normal">Normal</option>
-        <option value="size-large">Large</option>
-        <option value="size-larger">Larger</option>
-        <option value="size-largest">Largest</option>
-      </select>
-    </div>
-
-    <!-- PROGRESS TRACKER START -->
-    
-      <div id="progress-tracker" class="progress-tracker">
-        
       </div>
 
-    <!-- PROGRESS TRACKER END -->
-
-    <div id="main-content" class="main-content" role="main">
-      
-      <div id="venue-not-found" class="alert-banner alert-banner--error hidden" role="alert">
-        <strong>Venue Not Found!</strong><br/>
-        Please rescan your QR code or ask for assistance.
-      </div>
-      
-      <div id="venue-selection" class="venue-selection hidden">
-        <p class="venue-selection-intro">Search or select your venue to join the game:</p>
-        <label for="searchBox">Search venues:</label>
-        <input type="text" id="searchBox" onkeyup="filterVenues()" placeholder="Type to filter venues..." aria-label="Search venues">
-        <label for="venue-list">Select your venue:</label>
-        <select id="venue-list" class="venue-list" multiple onchange="handleVenueSelection(this)" size="10" aria-label="Venue list"></select>
-        <button onclick="joinGame()" class="button button--primary button--block button--spaced">JOIN GAME</button>
+      <div id="accessibility-bar" class="accessibility-toolbar">
+        <label for="fontSizeSelector">Font Size:</label>
+        <select
+          id="fontSizeSelector"
+          class="accessibility-select"
+          onchange="updateFontSize(this.value)"
+        >
+          <option value="size-small">Small</option>
+          <option value="size-normal">Normal</option>
+          <option value="size-large">Large</option>
+          <option value="size-larger">Larger</option>
+          <option value="size-largest">Largest</option>
+        </select>
       </div>
 
-      <div id="round-summary" class="round-summary hidden">
-        <div id="summary-panel" class="summary-panel" role="region" aria-label="Submission summary"></div>
-        <button id="btnContinue" class="button button--primary">CONTINUE TO NEXT ROUND</button>
-      </div>
+      <!-- PROGRESS TRACKER START -->
 
-      <div id="round-not-found" class="alert-banner alert-banner--error hidden" role="alert">
-        <strong>Round Not Found!</strong><br/>
-        Please navigate to current round at the bottom.<br/>
-        If the game is over, you can return to the landing page.
-      </div>
+      <div id="progress-tracker" class="progress-tracker"></div>
 
-      <form id="trivia-form" class="trivia-form hidden" role="form" aria-label="Trivia questions form">
-        <div id="round-description" class="round-description hidden" role="complementary" aria-label="Round description"></div>
-        <div id="questionsContainer"></div>
-        <div id="form-progress" class="form-progress hidden" role="progressbar" aria-label="Form completion progress" aria-valuemin="0" aria-valuemax="100">
-          <div id="progress-bar" class="progress-bar">
-            <div id="progress-bar__fill" class="progress-bar__fill"></div>
-            <div id="progress-bar__label" class="progress-bar__label" aria-live="polite"></div>
+      <!-- PROGRESS TRACKER END -->
+
+      <div id="main-content" class="main-content" role="main">
+        <div
+          id="venue-not-found"
+          class="alert-banner alert-banner--error hidden"
+          role="alert"
+        >
+          <strong>Venue Not Found!</strong><br />
+          Please rescan your QR code or ask for assistance.
+        </div>
+
+        <div id="venue-selection" class="venue-selection hidden">
+          <p class="venue-selection-intro">
+            Search or select your venue to join the game:
+          </p>
+          <label for="searchBox">Search venues:</label>
+          <input
+            type="text"
+            id="searchBox"
+            onkeyup="filterVenues()"
+            placeholder="Type to filter venues..."
+            aria-label="Search venues"
+          />
+          <label for="venue-list">Select your venue:</label>
+          <select
+            id="venue-list"
+            class="venue-list"
+            multiple
+            onchange="handleVenueSelection(this)"
+            size="10"
+            aria-label="Venue list"
+          ></select>
+          <button
+            onclick="joinGame()"
+            class="button button--primary button--block button--spaced"
+          >
+            JOIN GAME
+          </button>
+        </div>
+
+        <div id="round-summary" class="round-summary hidden">
+          <div
+            id="summary-panel"
+            class="summary-panel"
+            role="region"
+            aria-label="Submission summary"
+          ></div>
+          <button id="btnContinue" class="button button--primary">
+            CONTINUE TO NEXT ROUND
+          </button>
+        </div>
+
+        <div
+          id="round-not-found"
+          class="alert-banner alert-banner--error hidden"
+          role="alert"
+        >
+          <strong>Round Not Found!</strong><br />
+          Please navigate to current round at the bottom.<br />
+          If the game is over, you can return to the landing page.
+        </div>
+
+        <form
+          id="trivia-form"
+          class="trivia-form hidden"
+          role="form"
+          aria-label="Trivia questions form"
+        >
+          <div
+            id="round-description"
+            class="round-description hidden"
+            role="complementary"
+            aria-label="Round description"
+          ></div>
+          <div id="questionsContainer"></div>
+          <div
+            id="form-progress"
+            class="form-progress hidden"
+            role="progressbar"
+            aria-label="Form completion progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div id="progress-bar" class="progress-bar">
+              <div id="progress-bar__fill" class="progress-bar__fill"></div>
+              <div
+                id="progress-bar__label"
+                class="progress-bar__label"
+                aria-live="polite"
+              ></div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button
+              id="submit-answers-button"
+              type="submit"
+              class="button button--primary"
+            >
+              SUBMIT ANSWERS
+            </button>
+          </div>
+        </form>
+
+        <dialog id="submit-confirm-dialog" class="dialog">
+          <p class="dialog__text">
+            You have unanswered questions.<br />Are you sure you want to submit?
+          </p>
+          <div class="dialog__actions">
+            <button id="cancel-submit-button" class="button button--secondary">
+              Go Back
+            </button>
+            <button id="confirm-submit-button" class="button button--danger">
+              Submit Anyway
+            </button>
+          </div>
+        </dialog>
+
+        <!-- FOOTER NAV -->
+        <div class="footer" role="contentinfo">
+          <div
+            id="round-selection-prompt"
+            class="round-selection-prompt hidden"
+            role="region"
+            aria-label="Round navigation instructions"
+          >
+            Not on the correct round?<br />Select the current round or Register
+          </div>
+          <div
+            id="round-navigation"
+            class="nav-tabs"
+            role="tablist"
+            aria-label="Round selection navigation"
+          ></div>
+          <div class="footer-links">
+            <a
+              id="standardFormLink"
+              href="#"
+              target="_blank"
+              class="footer-link hidden"
+              aria-label="Use standard Google Form if having trouble"
+            >
+              Trouble? Use standard Google Form
+            </a>
+            <a
+              href="https://privatelabeltrivia.com"
+              class="footer-credit"
+              aria-label="Powered By Private Label Trivia"
+            >
+              Powered By PLT
+            </a>
+            <div id="app-version" class="app-version-display"></div>
           </div>
         </div>
-        <div class="form-actions">
-          <button id="submit-answers-button" type="submit" class="button button--primary">SUBMIT ANSWERS</button>
-        </div>
-      </form>
-
-      <dialog id="submit-confirm-dialog" class="dialog">
-        <p class="dialog__text">You have unanswered questions.<br/>Are you sure you want to submit?</p>
-        <div class="dialog__actions">
-          <button id="cancel-submit-button" class="button button--secondary">Go Back</button>
-          <button id="confirm-submit-button" class="button button--danger">Submit Anyway</button>
-        </div>
-      </dialog>
-
-    <!-- FOOTER NAV -->
-      <div class="footer" role="contentinfo">
-        <div id="round-selection-prompt" class="round-selection-prompt hidden" role="region" aria-label="Round navigation instructions">
-          Not on the correct round?<br/>Select the current round or Register
-        </div>
-        <div id="round-navigation" class="nav-tabs" role="tablist" aria-label="Round selection navigation"></div>
-        <div class="footer-links">
-          <a id="standardFormLink" href="#" target="_blank"
-            class="footer-link hidden" aria-label="Use standard Google Form if having trouble">
-            Trouble? Use standard Google Form
-          </a>
-          <a href="https://privatelabeltrivia.com"
-            class="footer-credit" aria-label="Powered By Private Label Trivia">
-            Powered By PLT
-          </a>
-          <div id="app-version" class="app-version-display"></div>
-
-        </div>
-
-        </div> <!-- ENDS CONTENT -->
-      </div> <!-- ENDS FOOTER -->
-  </div> <!-- END CONTAINER -->
-
-  <!-- Branded Success Overlay -->
-  <div id="success-overlay" class="success-overlay hidden">
-    <div class="success-panel">
-        <img id="success-logo" class="success-logo">
-      
-      <h2 id="success-venue-name" class="success-venue-title"></h2>
-      <div class="success-icon">🎉</div>
-      <h1 class="success-title">Thanks for playing!</h1>
-      <div id="confirmation-text" class="success-text"></div>
+        <!-- ENDS CONTENT -->
+      </div>
+      <!-- ENDS FOOTER -->
     </div>
-  </div>
+    <!-- END CONTAINER -->
 
-  <script>
+    <!-- Branded Success Overlay -->
+    <div id="success-overlay" class="success-overlay hidden">
+      <div class="success-panel">
+        <img id="success-logo" class="success-logo" />
 
+        <h2 id="success-venue-name" class="success-venue-title"></h2>
+        <div class="success-icon">🎉</div>
+        <h1 class="success-title">Thanks for playing!</h1>
+        <div id="confirmation-text" class="success-text"></div>
+      </div>
+    </div>
 
-    // Configuration Constants
-    const CONFIG = {
-      API_ENDPOINT: 'https://script.google.com/macros/s/AKfycbzSKsXsSkuCtLr3kC8OxIcFqdQdakD7Ux1_-07K7KSMYjt0DDCSyj2qX2h3OG1o4OU9/exec',
-      LOADING_TIMEOUT: 60000,
-      LOADING_DISPLAY_TIME: 2000,
-      MAX_VENUE_LIST_HEIGHT: 20,
-      CACHE_EXPIRY_MS: 6 * 60 * 60 * 1000
-    };
+    <script>
+      // Configuration Constants
+      const CONFIG = {
+        API_ENDPOINT:
+          "https://script.google.com/macros/s/AKfycbzSKsXsSkuCtLr3kC8OxIcFqdQdakD7Ux1_-07K7KSMYjt0DDCSyj2qX2h3OG1o4OU9/exec",
+        LOADING_TIMEOUT: 60000,
+        LOADING_DISPLAY_TIME: 2000,
+        MAX_VENUE_LIST_HEIGHT: 20,
+        CACHE_EXPIRY_MS: 6 * 60 * 60 * 1000,
+      };
 
-    // Storage Key Generator
-    const STORAGE_KEYS = {
-      SYSTEM: {
-        EMAIL: 'plt_system_email',
-        FONT_SIZE: 'plt_system_font_size'
-      },
-      getVenueKeys: (venueId) => ({
-        TEAM_NAME: `plt_venue_${venueId}_team_name`,
-        REGISTRATION_TIME: `plt_venue_${venueId}_registration_time`,
-        COMPLETED_ROUNDS: `plt_venue_${venueId}_completed_rounds`,
-        DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`
-      }),
-      getRoundPrefix: (venueId, roundNum) => `plt_round_${venueId}_${roundNum}_`
-    };
+      // Storage Key Generator
+      const STORAGE_KEYS = {
+        SYSTEM: {
+          EMAIL: "plt_system_email",
+          FONT_SIZE: "plt_system_font_size",
+        },
+        getVenueKeys: (venueId) => ({
+          TEAM_NAME: `plt_venue_${venueId}_team_name`,
+          REGISTRATION_TIME: `plt_venue_${venueId}_registration_time`,
+          COMPLETED_ROUNDS: `plt_venue_${venueId}_completed_rounds`,
+          DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`,
+        }),
+        getRoundPrefix: (venueId, roundNum) =>
+          `plt_round_${venueId}_${roundNum}_`,
+      };
 
-    // Cache Manager Utility
-    const CacheManager = {
-      set: (key, value) => {
-        const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-        localStorage.setItem(key, stringValue);
-        console.log(`Cache set: ${key} = ${stringValue}`);
-      },
-      get: (key, defaultValue = null) => {
-        try {
-          const value = localStorage.getItem(key);
-          console.log(`Cache get: ${key} = ${value}`);
-          if (!value) return defaultValue;
-          const stringValue = typeof value === 'object' ? JSON.parse(value) : String(value);
-          return stringValue;
-        } catch {
-          return defaultValue;
+      // Cache Manager Utility
+      const CacheManager = {
+        set: (key, value) => {
+          const stringValue =
+            typeof value === "object" ? JSON.stringify(value) : String(value);
+          localStorage.setItem(key, stringValue);
+          console.log(`Cache set: ${key} = ${stringValue}`);
+        },
+        get: (key, defaultValue = null) => {
+          try {
+            const value = localStorage.getItem(key);
+            console.log(`Cache get: ${key} = ${value}`);
+            if (!value) return defaultValue;
+            const stringValue =
+              typeof value === "object" ? JSON.parse(value) : String(value);
+            return stringValue;
+          } catch {
+            return defaultValue;
+          }
+        },
+        remove: (key) => {
+          localStorage.removeItem(key);
+          console.log(`Cache removed: ${key}`);
+        },
+        clear: (prefix) => {
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith(prefix))
+            .forEach((k) => localStorage.removeItem(k));
+          console.log(`Cache cleared: ${prefix}*`);
+        },
+      };
+
+      // Constants for this module
+      const KEY_REGISTRATION_TIME = "registration_time";
+      const KEY_TEAM_NAME = "team_name";
+      const KEY_DOUBLE_ROUND = "bonus_round";
+      const KEY_COMPLETED_ROUNDS = "completed_rounds";
+
+      const vId =
+        new URLSearchParams(window.location.search).get("venueId") || "";
+      const currentRound = parseInt(
+        new URLSearchParams(window.location.search).get("round") || 0,
+        10,
+      );
+
+      const venueKeys = STORAGE_KEYS.getVenueKeys(vId);
+      const roundKeyPrefix = STORAGE_KEYS.getRoundPrefix(vId, currentRound);
+
+      const HEADER_TEAM_NAME = "TEAM NAME";
+      const HEADER_DOUBLE_ROUND = "DOUBLE-POINTS CHOICE";
+
+      // Global Data Variable
+      let appData = {};
+
+      getFormData();
+
+      function renderPage(data) {
+        console.log("1. Set Theme Color");
+        if (data.themeColor) {
+          document.documentElement.style.setProperty(
+            "--plt-color-primary",
+            data.themeColor,
+          );
         }
-      },
-      remove: (key) => {
-        localStorage.removeItem(key);
-        console.log(`Cache removed: ${key}`);
-      },
-      clear: (prefix) => {
-        Object.keys(localStorage)
-          .filter(k => k.startsWith(prefix))
-          .forEach(k => localStorage.removeItem(k));
-        console.log(`Cache cleared: ${prefix}*`);
-      }
-    };
 
-    // Constants for this module
-    const KEY_REGISTRATION_TIME = 'registration_time';
-    const KEY_TEAM_NAME = 'team_name';
-    const KEY_DOUBLE_ROUND = 'bonus_round';
-    const KEY_COMPLETED_ROUNDS = 'completed_rounds';
+        console.log("2. Set Basic Text");
+        document.getElementById("venue-name").textContent =
+          data.venueName || "";
+        document.getElementById("success-venue-name").textContent =
+          data.venueName || "";
+        document.getElementById("round-title").textContent =
+          data.roundTitle || "";
+        document.getElementById("app-version").textContent =
+          "Build: " + (data.appVersion || "");
 
-    const vId = new URLSearchParams(window.location.search).get('venueId') || '';
-    const currentRound = parseInt(new URLSearchParams(window.location.search).get('round') || 0, 10);
+        const roundTitleContainer = document.getElementById(
+          "round-title-container",
+        );
+        if (!data.roundTitle) toggleVisibility(roundTitleContainer, false);
 
-    const venueKeys = STORAGE_KEYS.getVenueKeys(vId);
-    const roundKeyPrefix = STORAGE_KEYS.getRoundPrefix(vId, currentRound);
+        console.log("3. Set Images");
+        const headerLogo = document.getElementById("header-logo");
+        if (data.headerSrc)
+          headerLogo.src = data.headerSrc || data.headerUrl || "";
+        const loadingLogo = document.getElementById("loading-logo");
+        if (data.loadingSrc)
+          loadingLogo.src = data.loadingSrc || data.loadingUrl || "";
+        const successLogo = document.getElementById("success-logo");
+        if (data.successSrc)
+          successLogo.src = data.successSrc || data.successUrl || "";
 
-    const HEADER_TEAM_NAME = 'TEAM NAME';
-    const HEADER_DOUBLE_ROUND = 'DOUBLE-POINTS CHOICE';
-
-    // Global Data Variable
-    let appData = {};
-    
-    getFormData();
-    
-    function renderPage(data) {
-      console.log("1. Set Theme Color");
-      if (data.themeColor) {
-        document.documentElement.style.setProperty('--plt-color-primary', data.themeColor);
-      }
-      
-      console.log("2. Set Basic Text");
-      document.getElementById('venue-name').textContent = data.venueName || '';
-      document.getElementById('success-venue-name').textContent = data.venueName || '';
-      document.getElementById('round-title').textContent = data.roundTitle || '';
-      document.getElementById('app-version').textContent = 'Build: ' + (data.appVersion || '');
-      
-      const roundTitleContainer = document.getElementById('round-title-container');
-      if (!data.roundTitle) toggleVisibility(roundTitleContainer,false);
-      
-      console.log("3. Set Images");
-      const headerLogo = document.getElementById('header-logo');
-      if (data.headerSrc) headerLogo.src = data.headerSrc || data.headerUrl || '';
-      const loadingLogo = document.getElementById('loading-logo');
-      if (data.loadingSrc) loadingLogo.src = data.loadingSrc || data.loadingUrl || '';
-      const successLogo = document.getElementById('success-logo');
-      if (data.successSrc) successLogo.src = data.successSrc || data.successUrl || '';
-    
-      console.log("4. Populate Venue List");
-      if (data.allVenues && Array.isArray(data.allVenues)) {
-        const venueList = document.getElementById('venue-list');
-        venueList.innerHTML = '';
-        data.allVenues.forEach(venue => {
-          const option = createSelectOption(venue.id, venue.name, {
-            padding: '8px',
-            borderBottom: '1px solid var(--plt-color-gray-light)'
+        console.log("4. Populate Venue List");
+        if (data.allVenues && Array.isArray(data.allVenues)) {
+          const venueList = document.getElementById("venue-list");
+          venueList.innerHTML = "";
+          data.allVenues.forEach((venue) => {
+            const option = createSelectOption(venue.id, venue.name, {
+              padding: "8px",
+              borderBottom: "1px solid var(--plt-color-gray-light)",
+            });
+            venueList.appendChild(option);
           });
-          venueList.appendChild(option);
-        });
-        venueList.size = Math.min(data.allVenues.length, CONFIG.MAX_VENUE_LIST_HEIGHT);
-      }
-      
-      console.log("5. Populate Round Description");
-      if (data.roundDescription) {
-        const descDiv = document.getElementById('round-description');
-        descDiv.innerHTML = data.roundDescription;
-        toggleVisibility(descDiv, true);
-      }
-      
-      console.log("6. Populate Questions");
-      if (data.questions && Array.isArray(data.questions)) {
-        renderQuestions(data);
-        restoreFormFromCache();
-      }
-      
-      console.log("7. Dynamic Progress Tracker");
-      const tracker = document.getElementById('progress-tracker');
-      tracker.innerHTML = '';
-      if (data.availableRounds) {
-        data.availableRounds.forEach(rNum => {
-          const dot = document.createElement('div');
-          dot.className = 'round-status-dot';
-          dot.id = `dot-${rNum}`;
-          dot.textContent = rNum === 0 ? 'R' : rNum;
-          tracker.appendChild(dot);
-        });
-      }
-      
-      console.log("8. Populate Navigation Pills");
-      if (data.availableRounds && data.isValidVenue) {
-        renderNavPills(data);
-      }
-      
-      console.log("9. Show/Hide Sections based on validation");
-      const venueNotFound = document.getElementById('venue-not-found');
-      const venueSelectContainer = document.getElementById('venue-selection');
-      const roundNotFound = document.getElementById('round-not-found');
-      const triviaForm = document.getElementById('trivia-form');
-      const roundSelectionPrompt = document.getElementById('round-selection-prompt');
-      const standardFormLink = document.getElementById('standardFormLink');
+          venueList.size = Math.min(
+            data.allVenues.length,
+            CONFIG.MAX_VENUE_LIST_HEIGHT,
+          );
+        }
 
-      console.log("9a. Venue Validation:", data.isValidVenue);
-      console.log("9b. Round Validation:", data.isValidRound);
+        console.log("5. Populate Round Description");
+        if (data.roundDescription) {
+          const descDiv = document.getElementById("round-description");
+          descDiv.innerHTML = data.roundDescription;
+          toggleVisibility(descDiv, true);
+        }
 
-      if (!data.isValidVenue) {
-        toggleVisibility(venueNotFound, true);
-        toggleVisibility(venueSelectContainer, true);
-        toggleVisibility(triviaForm, false);
-      } else {
-        toggleVisibility(venueNotFound, false);
-        toggleVisibility(venueSelectContainer, false);
-        toggleVisibility(roundSelectionPrompt, true);
+        console.log("6. Populate Questions");
+        if (data.questions && Array.isArray(data.questions)) {
+          renderQuestions(data);
+          restoreFormFromCache();
+        }
 
-        if (!data.isValidRound) {
-          toggleVisibility(roundNotFound, true);
+        console.log("7. Dynamic Progress Tracker");
+        const tracker = document.getElementById("progress-tracker");
+        tracker.innerHTML = "";
+        if (data.availableRounds) {
+          data.availableRounds.forEach((rNum) => {
+            const dot = document.createElement("div");
+            dot.className = "round-status-dot";
+            dot.id = `dot-${rNum}`;
+            dot.textContent = rNum === 0 ? "R" : rNum;
+            tracker.appendChild(dot);
+          });
+        }
+
+        console.log("8. Populate Navigation Pills");
+        if (data.availableRounds && data.isValidVenue) {
+          renderNavPills(data);
+        }
+
+        console.log("9. Show/Hide Sections based on validation");
+        const venueNotFound = document.getElementById("venue-not-found");
+        const venueSelectContainer = document.getElementById("venue-selection");
+        const roundNotFound = document.getElementById("round-not-found");
+        const triviaForm = document.getElementById("trivia-form");
+        const roundSelectionPrompt = document.getElementById(
+          "round-selection-prompt",
+        );
+        const standardFormLink = document.getElementById("standardFormLink");
+
+        console.log("9a. Venue Validation:", data.isValidVenue);
+        console.log("9b. Round Validation:", data.isValidRound);
+
+        if (!data.isValidVenue) {
+          toggleVisibility(venueNotFound, true);
+          toggleVisibility(venueSelectContainer, true);
           toggleVisibility(triviaForm, false);
         } else {
-          console.log("Round is valid - showing form");
-          toggleVisibility(roundNotFound, false);
-          toggleVisibility(triviaForm, true);
+          toggleVisibility(venueNotFound, false);
+          toggleVisibility(venueSelectContainer, false);
+          toggleVisibility(roundSelectionPrompt, true);
+
+          if (!data.isValidRound) {
+            toggleVisibility(roundNotFound, true);
+            toggleVisibility(triviaForm, false);
+          } else {
+            console.log("Round is valid - showing form");
+            toggleVisibility(roundNotFound, false);
+            toggleVisibility(triviaForm, true);
+          }
         }
-      }
-      
-      if (data.directFormUrl) {
-        standardFormLink.href = data.directFormUrl + '/viewform';
-        toggleVisibility(standardFormLink, true);
-      }
-      
-      console.log("10. Hide Overlay");
-      const loadingOverlay = document.getElementById('loading-overlay');
-      if (loadingOverlay) toggleVisibility(loadingOverlay, false);
 
-    }
-    
-    function renderQuestions(data) {
-      const container = document.getElementById('questionsContainer');
-      container.innerHTML = '';
+        if (data.directFormUrl) {
+          standardFormLink.href = data.directFormUrl + "/viewform";
+          toggleVisibility(standardFormLink, true);
+        }
 
-      const cacheEmail = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL) || '';
-      console.log('Cache Email:', cacheEmail);
-      const appDataEmail = appData.emailFromUrl || '';
-      console.log('App Data Email:', appDataEmail);
-      const urlEmail = new URLSearchParams(window.location.search).get('email') || '';
-      console.log('Email from App Data:', appDataEmail);
-      const foundEmail = appDataEmail || urlEmail || cacheEmail;
-      console.log('Email found:', foundEmail);
-      
-      // Add Email field if needed
-      if (!foundEmail || data.roundNum === 0) {
-        const emailBlock = document.createElement('div');
-        emailBlock.className = 'q-block';
-        emailBlock.innerHTML = `
+        console.log("10. Hide Overlay");
+        const loadingOverlay = document.getElementById("loading-overlay");
+        if (loadingOverlay) toggleVisibility(loadingOverlay, false);
+      }
+
+      function renderQuestions(data) {
+        const container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+
+        const cacheEmail = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL) || "";
+        console.log("Cache Email:", cacheEmail);
+        const appDataEmail = appData.emailFromUrl || "";
+        console.log("App Data Email:", appDataEmail);
+        const urlEmail =
+          new URLSearchParams(window.location.search).get("email") || "";
+        console.log("Email from App Data:", appDataEmail);
+        const foundEmail = appDataEmail || urlEmail || cacheEmail;
+        console.log("Email found:", foundEmail);
+
+        // Add Email field if needed
+        if (!foundEmail || data.roundNum === 0) {
+          const emailBlock = document.createElement("div");
+          emailBlock.className = "q-block";
+          emailBlock.innerHTML = `
           <label>EMAIL ADDRESS <span class="required-asterisk">*</span></label>
           <input type="email" name="email" id="userEmail" placeholder="your@email.com" required>
         `;
-        container.appendChild(emailBlock);
-        const emailInput = document.getElementById('userEmail');
-        emailInput.value = foundEmail;
-      } else {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'email';
-        hiddenInput.id = 'userEmail';
-        hiddenInput.value = foundEmail;
-        container.appendChild(hiddenInput);
-      }
-      
-      // Add Questions
-      data.questions.forEach(q => {
-        const qBlock = document.createElement('div');
-        qBlock.className = 'q-block';
-        
-        let label = `<label>${q.label}`;
-        if (q.required) label += ' <span class="required-asterisk">*</span>';
-        label += '</label>';
-        
-        let description = '';
-        if (q.description) {
-          description = `<p class="q-description">${q.description}</p>`;
+          container.appendChild(emailBlock);
+          const emailInput = document.getElementById("userEmail");
+          emailInput.value = foundEmail;
+        } else {
+          const hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = "email";
+          hiddenInput.id = "userEmail";
+          hiddenInput.value = foundEmail;
+          container.appendChild(hiddenInput);
         }
-        
-        let input = '';
-        if (q.type === 'select' || (q.options && q.options.length > 0)) {
-          input = `<select name="${q.id}" id="q_${q.id}" ${q.required ? 'required' : ''}>
+
+        // Add Questions
+        data.questions.forEach((q) => {
+          const qBlock = document.createElement("div");
+          qBlock.className = "q-block";
+
+          let label = `<label>${q.label}`;
+          if (q.required) label += ' <span class="required-asterisk">*</span>';
+          label += "</label>";
+
+          let description = "";
+          if (q.description) {
+            description = `<p class="q-description">${q.description}</p>`;
+          }
+
+          let input = "";
+          if (q.type === "select" || (q.options && q.options.length > 0)) {
+            input = `<select name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""}>
             <option value="" selected>Choose...</option>`;
-          q.options.forEach(opt => {
-            input += `<option value="${opt}" data-label="${opt}">${opt}</option>`;
-          });
-          input += '</select>';
-        } else {
-          input = `<input type="text" name="${q.id}" id="q_${q.id}" ${q.required ? 'required' : ''} placeholder="Type answer here...">`;
-        }
-        
-        qBlock.innerHTML = label + description + input;
-        container.appendChild(qBlock);
-      });
-    }
-    
-    function renderNavPills(data) {
-      const container = document.getElementById('round-navigation');
-      container.innerHTML = '';
-      
-      data.availableRounds.forEach(rNum => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.id = `pill-${rNum}`;
-        button.className = `round-tab ${data.roundNum === rNum ? 'round-tab--active' : 'round-tab--inactive'}`;
-        button.textContent = rNum === 0 ? 'R' : rNum;
-        button.setAttribute('role', 'tab');
-        button.setAttribute('aria-selected', data.roundNum === rNum ? 'true' : 'false');
-        button.addEventListener('click', () => handleNavClick(rNum));
-        container.appendChild(button);
-      });
-    }
-
-    function restoreFormFromCache() {
-      console.log('Restoring form data from cache...');
-      const form = document.getElementById('trivia-form');
-      if (!form) return;
-
-      form.querySelectorAll('.q-block').forEach(block => {
-        const input = block.querySelector('input');
-        const select = block.querySelector('select');
-        const label = block.querySelector('label');
-        
-        const field = input || select;
-        if (!field) return;
-
-        // 1. Handle "Team Name" logic
-        if (label && label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)) {
-          const teamVal = CacheManager.get(venueKeys.TEAM_NAME);
-          if (teamVal) field.value = teamVal;
-        }
-
-        // 2. Restore cached value
-        const key = roundKeyPrefix + field.name;
-        const cached = CacheManager.get(key);
-        console.log(`Restoring ${field.name} from cache with key ${key}:`, cached);
-        if (cached) field.value = cached;
-      });
-
-      console.log('Form restored');
-    }
-
-    async function getFormData() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const venueId = params.get('venueId');
-        const round = params.get('round') || 0;
-
-        if (!venueId || round === null) {
-          showError('Missing venue or round information in URL');
-          return;
-        }
-
-        const url = new URL(CONFIG.API_ENDPOINT);
-        url.searchParams.append('venueId', venueId);
-        url.searchParams.append('round', round);
-
-        const response = await fetch(url, {
-          method: 'GET',
-          mode: 'cors'
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API returned status ${response.status}`);
-        }
-        toggleLoading(true);
-        appData = await response.json();
-        console.log('Data received from Apps Script:', appData);
-        renderPage(appData);
-        toggleLoading(false);
-        
-      } catch (error) {
-        console.error('Failed to fetch form data:', error);
-        showError('Unable to load form. Please refresh and try again.');
-      }
-    }
-
-    function showError(message) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'alert-banner alert-banner--error';
-      errorDiv.textContent = message;
-      document.getElementById('main-content').prepend(errorDiv);
-    }
-
-
-    // Accessibility Helper
-    function setAriaLabel(elementId, label) {
-      const element = document.getElementById(elementId);
-      if (element) element.setAttribute('aria-label', label);
-    }
-
-    // DOM Creation Helper
-    function createSelectOption(value, label, customStyles = {}) {
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = label;
-      Object.entries(customStyles).forEach(([key, val]) => {
-        option.style[key] = val;
-      });
-      return option;
-    }
-
-    // Search Filtering Logic
-    function filterVenues() {
-      const input = document.getElementById('searchBox').value.toUpperCase();
-      const select = document.getElementById('venue-list');
-      const options = select.getElementsByTagName('option');
-
-      for (let i = 0; i < options.length; i++) {
-        const txtValue = options[i].textContent || options[i].innerText;
-        options[i].style.display = txtValue.toUpperCase().includes(input) ? '' : 'none';
-      }
-    }
-
-    function handleVenueSelection(selectElement) {
-      const selectedValue = selectElement.value;
-      
-      for (let i = 0; i < selectElement.options.length; i++) {
-        selectElement.options[i].selected = selectElement.options[i].value === selectedValue;
-      }
-      
-      console.log('Selected Venue ID:', selectedValue);
-    }
-    
-    function joinGame() {
-      const sel = document.getElementById('venue-list');
-      if (sel.value) {
-        window.top.location.href = window.location.pathname + '?venueId=' + encodeURIComponent(sel.value);
-      } else {
-        alert('Please select a location from the list!');
-      }
-    }
-
-    function updateFontSize(className) {
-      const SIZES = ['size-small', 'size-normal', 'size-large', 'size-larger', 'size-largest'];
-      
-      // Use documentElement (the <html> tag) instead of body
-      const root = document.documentElement;
-      
-      root.classList.remove(...SIZES);
-      root.classList.add(className);
-      
-      CacheManager.set(STORAGE_KEYS.SYSTEM.FONT_SIZE, className);
-    }
-
-    // On page load, apply the saved preference
-    window.addEventListener('load', () => {
-      const savedSize = CacheManager.get(STORAGE_KEYS.SYSTEM.FONT_SIZE, 'size-normal');
-      document.getElementById('fontSizeSelector').value = savedSize;
-      document.body.classList.add(savedSize);
-    });
-
-    function toggleVisibility(el, show) {
-      if (el) {
-        if (show) {
-          console.log('Show element:', el.id);
-         if(el.classList.contains('hidden')) el.classList.remove('hidden');
-        } else {
-          console.log('Hide element:', el.id);
-          if (!el.classList.contains('hidden')) el.classList.add('hidden');
-        }
-      }
-    }
-
-    /**
-     * Toggles the loading screen
-     * @param {boolean} show - true to show, false to hide
-     * @param {number} duration - time in ms to keep visible (if showing)
-     * @param {function} callback - optional function to run after hiding
-     */
-    function toggleLoading(show, duration = 2000, callback = null) {
-      const overlay = document.getElementById('loading-overlay');
-      if (!overlay) return;
-
-      if (show) {
-        console.log('Show Loading');
-        overlay.style.display = 'flex';
-        overlay.style.opacity = '1';
-        
-        // Auto-hide after specified duration
-        setTimeout(() => {
-          toggleLoading(false, 0, callback);
-        }, duration);
-        
-      } else {
-        console.log('Hide Loading');
-        overlay.style.transition = "opacity 0.5s ease";
-        overlay.style.opacity = "0";
-        setTimeout(() => {
-          overlay.style.display = 'none';
-          if (callback) callback();
-        }, 500);
-      }
-    }
-
-    function getDestUrl(roundNum) {
-      const emailInput = document.getElementById('userEmail');
-      const emailValue = emailInput ? emailInput.value : '';
-      const emailStorage = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL);
-      const emailFinal = emailValue || emailStorage || '';
-
-      if (!emailFinal) {
-        console.warn('User email not found. Proceeding without email.');
-      }
-
-      const params = new URLSearchParams(window.location.search);
-      const venueId = params.get('venueId');
-      const destUrl = window.location.pathname + '?venueId=' + encodeURIComponent(venueId) + '&round=' + roundNum + '&email=' + encodeURIComponent(emailFinal);
-      console.log('Navigating to:', destUrl);
-      return destUrl;
-    }
-
-    function navDestUrl(roundNum) {
-      toggleLoading(true, 60000);
-      const destUrl = getDestUrl(roundNum);
-      window.top.location.href = destUrl;
-    }
-    
-    function handleNavClick(targetRound) {
-      navDestUrl(targetRound);
-    }
-
-    (function() {
-
-      function setDoubleRound(selectValue) {
-        const match = selectValue.match(/(\d+)/);
-        const roundNumber = match ? match[0] : null;
-
-        if (roundNumber) {
-          CacheManager.set(venueKeys.DOUBLE_ROUND, roundNumber);
-          console.log('Bonus round saved:', roundNumber);
-        }
-      }
-
-      function getDoubleRound() {
-        return CacheManager.get(venueKeys.DOUBLE_ROUND);
-      }
-
-      const form = document.getElementById('trivia-form');
-      const teamDisplay = document.getElementById('team-name-display');
-      const badgeDoubleRound = document.getElementById('badge-double');
-      
-      function getCleanRoundsArray() {
-        const raw = appData.availableRounds || [];
-        if (Array.isArray(raw)) {
-          return raw.sort((a, b) => a - b);
-        }
-        return raw.split(',')
-                  .map(n => parseInt(n.trim(), 10))
-                  .filter(n => !isNaN(n))
-                  .sort((a, b) => a - b);
-      }
-
-      function updateDuplicateStates() {
-        const selects = Array.from(form.querySelectorAll('select'));
-
-        if (selects.length === 0) {
-          console.warn("updateDuplicateStates: No <select> elements found in form.");
-          return;
-        }
-        if (!selects[0].options) {
-          console.warn("updateDuplicateStates: First select element has no options.");
-          return;
-        }
-        
-        // 1. Get all unique available options (excluding the "Select..." placeholder)
-        // We assume the first option is the placeholder, so we take options from index 1 onwards
-        const allAvailableOptions = Array.from(selects[0].options).filter(o => o.value !== "");
-        
-        // 2. Only run the logic if there are more options than select boxes
-        if (allAvailableOptions.length <= selects.length) {
-          // Optional: Reset all styles if condition isn't met
-          selects.forEach(s => {
-            s.style.backgroundColor = "transparent";
-            Array.from(s.options).forEach(o => {
-              // o.style.color = "var(--plt-color-black-pure)";
-              // o.style.backgroundColor = "";
-              // o.textContent = o.dataset.label;
+            q.options.forEach((opt) => {
+              input += `<option value="${opt}" data-label="${opt}">${opt}</option>`;
             });
-          });
-          return; 
-        }
-
-        // 3. Count occurrences
-        const valueCounts = {};
-        selects.forEach(s => {
-          if (s.value !== "") {
-            valueCounts[s.value] = (valueCounts[s.value] || 0) + 1;
+            input += "</select>";
+          } else {
+            input = `<input type="text" name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} placeholder="Type answer here...">`;
           }
-        });
 
-        // 4. Apply styles
-        selects.forEach(select => {
-          const isDuplicated = select.value !== "" && valueCounts[select.value] > 1;
-
-          Array.from(select.options).forEach(option => {
-            if (option.value === "") return;
-
-            const isTakenElsewhere = (valueCounts[option.value] || 0) > 0 && (select.value !== option.value);
-
-            option.style.color = isTakenElsewhere ? "#ccc" : "var(--plt-color-black-pure)";
-            option.style.backgroundColor = isTakenElsewhere ? "#f8f8f8" : "";
-            option.textContent = isTakenElsewhere ? `${option.dataset.label} (Already choosen)` : option.dataset.label;
-          });
-
-          select.style.backgroundColor = isDuplicated ? "#fffdf0" : "transparent";
-          //select.style.border = isDuplicated ? "2px solid #ffb3b3" : "1px solid";
+          qBlock.innerHTML = label + description + input;
+          container.appendChild(qBlock);
         });
       }
 
-      // PROGRESS BAR
-      function updateProgressBar() {
+      function renderNavPills(data) {
+        const container = document.getElementById("round-navigation");
+        container.innerHTML = "";
+
+        data.availableRounds.forEach((rNum) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.id = `pill-${rNum}`;
+          button.className = `round-tab ${data.roundNum === rNum ? "round-tab--active" : "round-tab--inactive"}`;
+          button.textContent = rNum === 0 ? "R" : rNum;
+          button.setAttribute("role", "tab");
+          button.setAttribute(
+            "aria-selected",
+            data.roundNum === rNum ? "true" : "false",
+          );
+          button.addEventListener("click", () => handleNavClick(rNum));
+          container.appendChild(button);
+        });
+      }
+
+      function restoreFormFromCache() {
+        console.log("Restoring form data from cache...");
+        const form = document.getElementById("trivia-form");
         if (!form) return;
-        console.log("Updating progress bar...");
-        
-        // Select only visible inputs
-        const inputs = Array.from(form.querySelectorAll('input[type="text"], input[type="email"], select')).filter(input => {
 
-          // input.id !== 'userEmail';
+        form.querySelectorAll(".q-block").forEach((block) => {
+          const input = block.querySelector("input");
+          const select = block.querySelector("select");
+          const label = block.querySelector("label");
 
-          // 1. Skip hidden inputs
-          if (input.type === 'hidden') return false;
+          const field = input || select;
+          if (!field) return;
 
-          if (currentRound > 1) {
-            // 2. Find the parent container
-            const parentBlock = input.closest('.q-block');
-            // 3. Find the label within that container and check its text
-            const label = parentBlock ? parentBlock.querySelector('label') : null;
-            const labelText = label ? label.textContent.toLowerCase() : "";
-            // 4. Return true if this is a "continuous clue"
-            const isContinuousClue = labelText.includes('continuous clue');
-            //return !isContinuousClue;
+          // 1. Handle "Team Name" logic
+          if (
+            label &&
+            label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)
+          ) {
+            const teamVal = CacheManager.get(venueKeys.TEAM_NAME);
+            if (teamVal) field.value = teamVal;
           }
 
-          return true;
+          // 2. Restore cached value
+          const key = roundKeyPrefix + field.name;
+          const cached = CacheManager.get(key);
+          console.log(
+            `Restoring ${field.name} from cache with key ${key}:`,
+            cached,
+          );
+          if (cached) field.value = cached;
         });
 
-        if (inputs.length === 0) return;
-        console.log(`Found ${inputs.length} visible inputs for progress calculation.`);
+        console.log("Form restored");
+      }
 
-        const filledCount = inputs.filter(input => input.value.trim() !== "").length;
-        const percentage = Math.round((filledCount / inputs.length) * 100);
-        const text = filledCount + " / " + inputs.length + " answered";
+      async function getFormData() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const venueId = params.get("venueId");
+          const round = params.get("round") || 0;
 
-        const pContainer = document.getElementById('form-progress');
-        const pFill = document.getElementById('progress-bar__fill');
-        const pText = document.getElementById('progress-bar__label');
+          if (!venueId || round === null) {
+            showError("Missing venue or round information in URL");
+            return;
+          }
 
-        if (pContainer && pFill) {
-          console.log(`Progress: ${percentage}% (${text})`);
-          toggleVisibility(pContainer, true);
-          pFill.style.width = percentage + "%";
-          pText.textContent = text;
+          const url = new URL(CONFIG.API_ENDPOINT);
+          url.searchParams.append("venueId", venueId);
+          url.searchParams.append("round", round);
+
+          const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+          });
+
+          if (!response.ok) {
+            throw new Error(`API returned status ${response.status}`);
+          }
+          toggleLoading(true);
+          appData = await response.json();
+          console.log("Data received from Apps Script:", appData);
+          renderPage(appData);
+          toggleLoading(false);
+        } catch (error) {
+          console.error("Failed to fetch form data:", error);
+          showError("Unable to load form. Please refresh and try again.");
         }
       }
 
-      // Completed warning
-      function showCompletedWarning(roundNum) {
-        const content = document.getElementById('main-content');
-        
-        // Create a unique container so we don't duplicate it
-        const warningDiv = document.createElement('div');
-        warningDiv.className = 'alert-banner alert-banner--warning';
-        
-        warningDiv.innerHTML = `
+      function showError(message) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "alert-banner alert-banner--error";
+        errorDiv.textContent = message;
+        document.getElementById("main-content").prepend(errorDiv);
+      }
+
+      // Accessibility Helper
+      function setAriaLabel(elementId, label) {
+        const element = document.getElementById(elementId);
+        if (element) element.setAttribute("aria-label", label);
+      }
+
+      // DOM Creation Helper
+      function createSelectOption(value, label, customStyles = {}) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        Object.entries(customStyles).forEach(([key, val]) => {
+          option.style[key] = val;
+        });
+        return option;
+      }
+
+      // Search Filtering Logic
+      function filterVenues() {
+        const input = document.getElementById("searchBox").value.toUpperCase();
+        const select = document.getElementById("venue-list");
+        const options = select.getElementsByTagName("option");
+
+        for (let i = 0; i < options.length; i++) {
+          const txtValue = options[i].textContent || options[i].innerText;
+          options[i].style.display = txtValue.toUpperCase().includes(input)
+            ? ""
+            : "none";
+        }
+      }
+
+      function handleVenueSelection(selectElement) {
+        const selectedValue = selectElement.value;
+
+        for (let i = 0; i < selectElement.options.length; i++) {
+          selectElement.options[i].selected =
+            selectElement.options[i].value === selectedValue;
+        }
+
+        console.log("Selected Venue ID:", selectedValue);
+      }
+
+      function joinGame() {
+        const sel = document.getElementById("venue-list");
+        if (sel.value) {
+          window.top.location.href =
+            window.location.pathname +
+            "?venueId=" +
+            encodeURIComponent(sel.value);
+        } else {
+          alert("Please select a location from the list!");
+        }
+      }
+
+      function updateFontSize(className) {
+        const SIZES = [
+          "size-small",
+          "size-normal",
+          "size-large",
+          "size-larger",
+          "size-largest",
+        ];
+
+        // Use documentElement (the <html> tag) instead of body
+        const root = document.documentElement;
+
+        root.classList.remove(...SIZES);
+        root.classList.add(className);
+
+        CacheManager.set(STORAGE_KEYS.SYSTEM.FONT_SIZE, className);
+      }
+
+      // On page load, apply the saved preference
+      window.addEventListener("load", () => {
+        const savedSize = CacheManager.get(
+          STORAGE_KEYS.SYSTEM.FONT_SIZE,
+          "size-normal",
+        );
+        document.getElementById("fontSizeSelector").value = savedSize;
+        document.body.classList.add(savedSize);
+      });
+
+      function toggleVisibility(el, show) {
+        if (el) {
+          if (show) {
+            console.log("Show element:", el.id);
+            if (el.classList.contains("hidden")) el.classList.remove("hidden");
+          } else {
+            console.log("Hide element:", el.id);
+            if (!el.classList.contains("hidden")) el.classList.add("hidden");
+          }
+        }
+      }
+
+      /**
+       * Toggles the loading screen
+       * @param {boolean} show - true to show, false to hide
+       * @param {number} duration - time in ms to keep visible (if showing)
+       * @param {function} callback - optional function to run after hiding
+       */
+      function toggleLoading(show, duration = 2000, callback = null) {
+        const overlay = document.getElementById("loading-overlay");
+        if (!overlay) return;
+
+        if (show) {
+          console.log("Show Loading");
+          overlay.style.display = "flex";
+          overlay.style.opacity = "1";
+
+          // Auto-hide after specified duration
+          setTimeout(() => {
+            toggleLoading(false, 0, callback);
+          }, duration);
+        } else {
+          console.log("Hide Loading");
+          overlay.style.transition = "opacity 0.5s ease";
+          overlay.style.opacity = "0";
+          setTimeout(() => {
+            overlay.style.display = "none";
+            if (callback) callback();
+          }, 500);
+        }
+      }
+
+      function getDestUrl(roundNum) {
+        const emailInput = document.getElementById("userEmail");
+        const emailValue = emailInput ? emailInput.value : "";
+        const emailStorage = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL);
+        const emailFinal = emailValue || emailStorage || "";
+
+        if (!emailFinal) {
+          console.warn("User email not found. Proceeding without email.");
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const venueId = params.get("venueId");
+        const destUrl =
+          window.location.pathname +
+          "?venueId=" +
+          encodeURIComponent(venueId) +
+          "&round=" +
+          roundNum +
+          "&email=" +
+          encodeURIComponent(emailFinal);
+        console.log("Navigating to:", destUrl);
+        return destUrl;
+      }
+
+      function navDestUrl(roundNum) {
+        toggleLoading(true, 60000);
+        const destUrl = getDestUrl(roundNum);
+        window.top.location.href = destUrl;
+      }
+
+      function handleNavClick(targetRound) {
+        navDestUrl(targetRound);
+      }
+
+      (function () {
+        function setDoubleRound(selectValue) {
+          const match = selectValue.match(/(\d+)/);
+          const roundNumber = match ? match[0] : null;
+
+          if (roundNumber) {
+            CacheManager.set(venueKeys.DOUBLE_ROUND, roundNumber);
+            console.log("Bonus round saved:", roundNumber);
+          }
+        }
+
+        function getDoubleRound() {
+          return CacheManager.get(venueKeys.DOUBLE_ROUND);
+        }
+
+        const form = document.getElementById("trivia-form");
+        const teamDisplay = document.getElementById("team-name-display");
+        const badgeDoubleRound = document.getElementById("badge-double");
+
+        function getCleanRoundsArray() {
+          const raw = appData.availableRounds || [];
+          if (Array.isArray(raw)) {
+            return raw.sort((a, b) => a - b);
+          }
+          return raw
+            .split(",")
+            .map((n) => parseInt(n.trim(), 10))
+            .filter((n) => !isNaN(n))
+            .sort((a, b) => a - b);
+        }
+
+        function updateDuplicateStates() {
+          const selects = Array.from(form.querySelectorAll("select"));
+
+          if (selects.length === 0) {
+            console.warn(
+              "updateDuplicateStates: No <select> elements found in form.",
+            );
+            return;
+          }
+          if (!selects[0].options) {
+            console.warn(
+              "updateDuplicateStates: First select element has no options.",
+            );
+            return;
+          }
+
+          // 1. Get all unique available options (excluding the "Select..." placeholder)
+          // We assume the first option is the placeholder, so we take options from index 1 onwards
+          const allAvailableOptions = Array.from(selects[0].options).filter(
+            (o) => o.value !== "",
+          );
+
+          // 2. Only run the logic if there are more options than select boxes
+          if (allAvailableOptions.length <= selects.length) {
+            // Optional: Reset all styles if condition isn't met
+            selects.forEach((s) => {
+              s.style.backgroundColor = "transparent";
+              Array.from(s.options).forEach((o) => {
+                // o.style.color = "var(--plt-color-black-pure)";
+                // o.style.backgroundColor = "";
+                // o.textContent = o.dataset.label;
+              });
+            });
+            return;
+          }
+
+          // 3. Count occurrences
+          const valueCounts = {};
+          selects.forEach((s) => {
+            if (s.value !== "") {
+              valueCounts[s.value] = (valueCounts[s.value] || 0) + 1;
+            }
+          });
+
+          // 4. Apply styles
+          selects.forEach((select) => {
+            const isDuplicated =
+              select.value !== "" && valueCounts[select.value] > 1;
+
+            Array.from(select.options).forEach((option) => {
+              if (option.value === "") return;
+
+              const isTakenElsewhere =
+                (valueCounts[option.value] || 0) > 0 &&
+                select.value !== option.value;
+
+              option.style.color = isTakenElsewhere
+                ? "#ccc"
+                : "var(--plt-color-black-pure)";
+              option.style.backgroundColor = isTakenElsewhere ? "#f8f8f8" : "";
+              option.textContent = isTakenElsewhere
+                ? `${option.dataset.label} (Already choosen)`
+                : option.dataset.label;
+            });
+
+            select.style.backgroundColor = isDuplicated
+              ? "#fffdf0"
+              : "transparent";
+            //select.style.border = isDuplicated ? "2px solid #ffb3b3" : "1px solid";
+          });
+        }
+
+        // PROGRESS BAR
+        function updateProgressBar() {
+          if (!form) return;
+          console.log("Updating progress bar...");
+
+          // Select only visible inputs
+          const inputs = Array.from(
+            form.querySelectorAll(
+              'input[type="text"], input[type="email"], select',
+            ),
+          ).filter((input) => {
+            // input.id !== 'userEmail';
+
+            // 1. Skip hidden inputs
+            if (input.type === "hidden") return false;
+
+            if (currentRound > 1) {
+              // 2. Find the parent container
+              const parentBlock = input.closest(".q-block");
+              // 3. Find the label within that container and check its text
+              const label = parentBlock
+                ? parentBlock.querySelector("label")
+                : null;
+              const labelText = label ? label.textContent.toLowerCase() : "";
+              // 4. Return true if this is a "continuous clue"
+              const isContinuousClue = labelText.includes("continuous clue");
+              //return !isContinuousClue;
+            }
+
+            return true;
+          });
+
+          if (inputs.length === 0) return;
+          console.log(
+            `Found ${inputs.length} visible inputs for progress calculation.`,
+          );
+
+          const filledCount = inputs.filter(
+            (input) => input.value.trim() !== "",
+          ).length;
+          const percentage = Math.round((filledCount / inputs.length) * 100);
+          const text = filledCount + " / " + inputs.length + " answered";
+
+          const pContainer = document.getElementById("form-progress");
+          const pFill = document.getElementById("progress-bar__fill");
+          const pText = document.getElementById("progress-bar__label");
+
+          if (pContainer && pFill) {
+            console.log(`Progress: ${percentage}% (${text})`);
+            toggleVisibility(pContainer, true);
+            pFill.style.width = percentage + "%";
+            pText.textContent = text;
+          }
+        }
+
+        // Completed warning
+        function showCompletedWarning(roundNum) {
+          const content = document.getElementById("main-content");
+
+          // Create a unique container so we don't duplicate it
+          const warningDiv = document.createElement("div");
+          warningDiv.className = "alert-banner alert-banner--warning";
+
+          warningDiv.innerHTML = `
           <strong>You have already submitted answers for Round ${roundNum}!</strong>
           <br/>
           If this is not correct please reset the round.
@@ -771,353 +931,402 @@
           <br/><br/>
           Or select the current round below.
         `;
-        
-        content.prepend(warningDiv);
 
-        // Get elements
-        const dialog = document.getElementById('confirmDialog');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
+          content.prepend(warningDiv);
 
-        // 1. When the "RESET ROUND" button is clicked, open the custom dialog
-        document.getElementById('btnReset').addEventListener('click', () => {
-          dialog.showModal(); // This makes it a proper modal dialog
-        });
+          // Get elements
+          const dialog = document.getElementById("confirmDialog");
+          const confirmBtn = document.getElementById("confirmBtn");
+          const cancelBtn = document.getElementById("cancelBtn");
 
-        // 2. Close if Cancel is clicked
-        cancelBtn.addEventListener('click', () => {
-          dialog.close();
-        });
-
-        // 3. Perform the reset if Confirm is clicked
-        confirmBtn.addEventListener('click', () => {
-          dialog.close();
-
-          // 1. Remove from completed rounds
-          let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
-          completed = completed.filter(r => r !== roundNum.toString());
-          CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
-          
-          // 2. Clear all TEMPORARY form data for THIS venue/round
-          CacheManager.clear(roundKeyPrefix);
-          
-          navDestUrl(roundNum);
-        });
-      }
-
-      // LOAD INITIAL GAME STATE
-      window.addEventListener('load', () => {
-        const regTime = parseInt(CacheManager.get(venueKeys.REGISTRATION_TIME), 10);
-        console.log('Reg Time:', regTime);
-
-        if (!regTime || isNaN(regTime)) {
-          CacheManager.clear(`plt_round_${vId}_`);
-        }
-
-        if (currentRound === 0) {
-          const now = new Date().getTime();
-          const sixHoursInMs = CONFIG.CACHE_EXPIRY_MS;
-
-          if (regTime && (now - regTime) > sixHoursInMs) {
-            console.log('Session expired. Clearing storage...');
-            CacheManager.clear(`plt_round_${vId}_`);
-            CacheManager.remove(venueKeys.DOUBLE_ROUND);
-            CacheManager.remove(venueKeys.COMPLETED_ROUNDS);
-          }
-
-          if (teamDisplay) toggleVisibility(teamDisplay, false);
-          if (badgeDoubleRound) toggleVisibility(badgeDoubleRound, false);
-        }
-
-        const savedTeam = CacheManager.get(venueKeys.TEAM_NAME);
-        if (savedTeam) {
-          teamDisplay.textContent = 'Team: ' + savedTeam;
-          toggleVisibility(teamDisplay, true);
-        }
-
-        if (badgeDoubleRound) {
-          const doubleRound = getDoubleRound();
-          console.log('Double Round:', doubleRound);
-          const isDouble = currentRound === 5 || currentRound === parseInt(doubleRound);
-          if (isDouble) {
-            toggleVisibility(badgeDoubleRound, true);
-          } else {
-            toggleVisibility(badgeDoubleRound, false);
-          }
-        }
-
-        const completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
-        const rList = getCleanRoundsArray();
-
-        rList.forEach(rNum => {
-          const dot = document.getElementById('dot-' + rNum);
-          const pill = document.getElementById('pill-' + rNum);
-          
-          if (completed.includes(rNum.toString())) {
-            // Check if the user is currently ON this round
-            if (rNum === currentRound) {  //&& currentRound !== 0
-              showCompletedWarning(rNum);
-              
-              const form = document.getElementById('trivia-form');
-              // HIDE THE FORM
-              console.log('Hiding form for completed round:', rNum);
-              if (form) {
-                toggleVisibility(form, false);
-              }
-              
-            }  
-
-            if (dot) dot.classList.add('completed');  
-            if (pill) { 
-              pill.style.opacity = "0.5"; 
-              pill.classList.add('completed');
-            } 
-          } else if (rNum === currentRound) {
-            if (dot) dot.classList.add('current');
-          }
-        });
-
-        updateDuplicateStates();
-        updateProgressBar();
-      });
-
-      console.log('Setting up form listeners...');
-      if (!form) return;
-      console.log('Form found:', form.id);
-
-      form.addEventListener('input', (e) => {
-        if (e.target.name && e.target.id === 'userEmail') {
-          CacheManager.set(STORAGE_KEYS.SYSTEM.EMAIL, e.target.value);
-        }
-
-        if (e.target.name && e.target.id !== 'userEmail') { 
-          const key = roundKeyPrefix + e.target.name;
-          CacheManager.set(key, e.target.value); 
-        }
-
-        if (e.target.tagName === 'SELECT') {
-          updateDuplicateStates();
-        }
-
-        updateProgressBar();
-      });
-
-      // Submission Logic
- 
-      document.getElementById('cancel-submit-button').addEventListener('click', () => {
-        document.getElementById('submit-confirm-dialog').close();
-      });
-
-      document.getElementById('confirm-submit-button').addEventListener('click', () => {
-        document.getElementById('submit-confirm-dialog').close();
-        proceedWithSubmission();
-      });
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const elementsToCheck = Array.from(form.querySelectorAll('input, select'));
-
-        // Now filter them
-        const emptyFields = elementsToCheck.filter(el => {
-          // 1. Only check fields that have the "required" attribute
-          //if (!el.hasAttribute('required')) return false;
-          
-          // 2. Identify if this input is a "continuous clue" field
-          const parentBlock = el.closest('.q-block');
-          const label = parentBlock ? parentBlock.querySelector('label') : null;
-          const isContinuousClue = label && label.textContent.toLowerCase().includes('continuous clue');
-
-          // 3. IGNORE logic: 
-          // If we are past round 1 AND this is a "continuous clue", return false (don't check it)
-          if (currentRound > 1 && isContinuousClue) {
-            return false;
-          }
-
-          // 2. Check if the value is empty
-          return el.value.trim() === "";
-        });
-
-        if (emptyFields.length > 0) {
-          document.getElementById('submit-confirm-dialog').showModal();
-        } else {
-          proceedWithSubmission();
-        }
-      });
-
-      // Helper: The logic that actually fires the request
-      function proceedWithSubmission() {
-        console.log('Submitting...');
-        const submitButton = document.getElementById('submit-answers-button');
-        submitButton.textContent = 'SUBMITTING...';
-        submitButton.disabled = true;
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        const formData = new FormData(form);
-        // ROUND 0 only
-        if (currentRound === 0) {
-          form.querySelectorAll('.q-block').forEach(block => {
-            const label = block.querySelector('label');
-            if (label && label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)) {
-              const teamVal = block.querySelector('input').value;
-              CacheManager.set(venueKeys.TEAM_NAME, teamVal);
-            }
-            if (label && label.textContent.toUpperCase().includes(HEADER_DOUBLE_ROUND)) {
-              const selectElement = block.querySelector('select');
-              if (selectElement && selectElement.value) {
-                setDoubleRound(selectElement.value);
-              }
-            }
+          // 1. When the "RESET ROUND" button is clicked, open the custom dialog
+          document.getElementById("btnReset").addEventListener("click", () => {
+            dialog.showModal(); // This makes it a proper modal dialog
           });
-          CacheManager.set(venueKeys.REGISTRATION_TIME, new Date().getTime().toString());
-        }
-        
-        const summaryHtml = buildSummaryTable(form);
 
-        const finalizeSubmission = () => {
-          console.log('Finalizing submission...');
-          markRoundComplete(currentRound);
-          CacheManager.clear(roundKeyPrefix);
+          // 2. Close if Cancel is clicked
+          cancelBtn.addEventListener("click", () => {
+            dialog.close();
+          });
+
+          // 3. Perform the reset if Confirm is clicked
+          confirmBtn.addEventListener("click", () => {
+            dialog.close();
+
+            // 1. Remove from completed rounds
+            let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+            completed = completed.filter((r) => r !== roundNum.toString());
+            CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
+
+            // 2. Clear all TEMPORARY form data for THIS venue/round
+            CacheManager.clear(roundKeyPrefix);
+
+            navDestUrl(roundNum);
+          });
+        }
+
+        // LOAD INITIAL GAME STATE
+        window.addEventListener("load", () => {
+          const regTime = parseInt(
+            CacheManager.get(venueKeys.REGISTRATION_TIME),
+            10,
+          );
+          console.log("Reg Time:", regTime);
 
           if (currentRound === 0) {
-            //handleRedirect();
+            const now = new Date().getTime();
+            const sixHoursInMs = CONFIG.CACHE_EXPIRY_MS;
+
+            if (now - regTime > sixHoursInMs) {
+              console.log("Session expired. Clearing storage...");
+              CacheManager.remove(venueKeys.DOUBLE_ROUND);
+              CacheManager.remove(venueKeys.COMPLETED_ROUNDS);
+            }
+
+            if (teamDisplay) toggleVisibility(teamDisplay, false);
+            if (badgeDoubleRound) toggleVisibility(badgeDoubleRound, false);
+          }
+
+          const savedTeam = CacheManager.get(venueKeys.TEAM_NAME);
+          if (savedTeam) {
+            teamDisplay.textContent = "Team: " + savedTeam;
+            toggleVisibility(teamDisplay, true);
+          }
+
+          if (badgeDoubleRound) {
+            const doubleRound = getDoubleRound();
+            console.log("Double Round:", doubleRound);
+            const isDouble =
+              currentRound === 5 || currentRound === parseInt(doubleRound);
+            if (isDouble) {
+              toggleVisibility(badgeDoubleRound, true);
+            } else {
+              toggleVisibility(badgeDoubleRound, false);
+            }
+          }
+
+          const completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+          const rList = getCleanRoundsArray();
+
+          rList.forEach((rNum) => {
+            const dot = document.getElementById("dot-" + rNum);
+            const pill = document.getElementById("pill-" + rNum);
+
+            if (completed.includes(rNum.toString())) {
+              // Check if the user is currently ON this round
+              if (rNum === currentRound) {
+                //&& currentRound !== 0
+                showCompletedWarning(rNum);
+
+                const form = document.getElementById("trivia-form");
+                // HIDE THE FORM
+                console.log("Hiding form for completed round:", rNum);
+                if (form) {
+                  toggleVisibility(form, false);
+                }
+              }
+
+              if (dot) dot.classList.add("completed");
+              if (pill) {
+                pill.style.opacity = "0.5";
+                pill.classList.add("completed");
+              }
+            } else if (rNum === currentRound) {
+              if (dot) dot.classList.add("current");
+            }
+          });
+
+          updateDuplicateStates();
+          updateProgressBar();
+        });
+
+        console.log("Setting up form listeners...");
+        if (!form) return;
+        console.log("Form found:", form.id);
+
+        form.addEventListener("input", (e) => {
+          if (e.target.name && e.target.id === "userEmail") {
+            CacheManager.set(STORAGE_KEYS.SYSTEM.EMAIL, e.target.value);
+          }
+
+          if (e.target.name && e.target.id !== "userEmail") {
+            const key = roundKeyPrefix + e.target.name;
+            CacheManager.set(key, e.target.value);
+          }
+
+          if (e.target.tagName === "SELECT") {
+            updateDuplicateStates();
+          }
+
+          updateProgressBar();
+        });
+
+        // Submission Logic
+
+        document
+          .getElementById("cancel-submit-button")
+          .addEventListener("click", () => {
+            document.getElementById("submit-confirm-dialog").close();
+          });
+
+        document
+          .getElementById("confirm-submit-button")
+          .addEventListener("click", () => {
+            document.getElementById("submit-confirm-dialog").close();
+            proceedWithSubmission();
+          });
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const elementsToCheck = Array.from(
+            form.querySelectorAll("input, select"),
+          );
+
+          // Now filter them
+          const emptyFields = elementsToCheck.filter((el) => {
+            // 1. Only check fields that have the "required" attribute
+            //if (!el.hasAttribute('required')) return false;
+
+            // 2. Identify if this input is a "continuous clue" field
+            const parentBlock = el.closest(".q-block");
+            const label = parentBlock
+              ? parentBlock.querySelector("label")
+              : null;
+            const isContinuousClue =
+              label &&
+              label.textContent.toLowerCase().includes("continuous clue");
+
+            // 3. IGNORE logic:
+            // If we are past round 1 AND this is a "continuous clue", return false (don't check it)
+            if (currentRound > 1 && isContinuousClue) {
+              return false;
+            }
+
+            // 2. Check if the value is empty
+            return el.value.trim() === "";
+          });
+
+          if (emptyFields.length > 0) {
+            document.getElementById("submit-confirm-dialog").showModal();
           } else {
-            showRoundSummary(summaryHtml);
-          }
-        };
-
-        console.log('Form data prepared, sending to server...');
-        console.log('Form Data:', Object.fromEntries(formData.entries()));
-        const directFormUrl = appData.directFormUrl || '';
-        fetch(directFormUrl + "/formResponse", {
-          method: 'POST',
-          body: new URLSearchParams(formData),
-          mode: 'no-cors'
-        })
-        .then(() => { 
-          finalizeSubmission(); 
-        })
-        .catch((err) => { 
-          console.log("Fetch handled via fallback:", err);
-          finalizeSubmission(); 
-        });
-
-        console.log('Submitted');
-      }
-      
-      function markRoundComplete(roundId) {
-        console.log('Round Complete:', roundId);
-        let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
-        const rString = roundId.toString();
-        if (!completed.includes(rString)) {
-          completed.push(rString);
-          CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
-        }
-      }
-
-      function showRoundSummary(html) {
-        toggleLoading(true, 1000);
-        console.log('Show Round Summary');
-        toggleVisibility(form, false);
-
-        // Hide progress indicator when viewing the summary table
-        const pContainer = document.getElementById('form-progress');
-        if (pContainer) toggleVisibility(pContainer, false);
-
-        const stickyTitle = document.getElementById('round-title');
-        if (stickyTitle) {
-          stickyTitle.textContent = currentRound === 0 ? 'Registration Summary' : `Your Submitted Round #${currentRound} Answers`;
-        }
-        
-        const desc = document.getElementById('round-description');
-        if (desc) toggleVisibility(desc, false);
-
-        document.getElementById('summary-panel').innerHTML = html;
-
-        const availableRounds = getCleanRoundsArray();
-        const finalRound = availableRounds.length > 0 ? Math.max(...availableRounds) : null;
-        const btnContinue = document.getElementById('btnContinue');
-        
-        if (btnContinue && currentRound === finalRound) {
-          btnContinue.textContent = 'CONTINUE';
-        }
-
-        const roundSummary = document.getElementById('round-summary');
-        if (roundSummary) toggleVisibility(roundSummary, true);
-      }
-
-      function buildSummaryTable(formElement) {
-        const table = document.createElement('table');
-        table.style.cssText = 'width:100%; border-collapse:collapse;';
-        
-        formElement.querySelectorAll('.q-block').forEach((block, index, array) => {
-          const label = block.querySelector('label').textContent.replace(/\*/g, '').trim();
-          const input = block.querySelector('input, select');
-          
-          if (input && input.type !== 'hidden') {
-            const row = table.insertRow();
-            const isLast = index === array.length - 1;
-            row.style.borderBottom = isLast ? 'none' : '1px solid var(--plt-color-border-med)';
-            
-            const labelCell = row.insertCell();
-            labelCell.textContent = label;
-            labelCell.style.cssText = 'padding:10px 15px 10px 0; font-weight:bold; color:var(--plt-color-gray-med); font-size:0.9em; width:50%;';
-            
-            const valueCell = row.insertCell();
-            valueCell.textContent = input.value;
-            valueCell.style.cssText = 'padding:10px 0; color:var(--plt-color-black-pure);';
+            proceedWithSubmission();
           }
         });
-        
-        return table.outerHTML;
-      }
 
-      document.getElementById('btnContinue').addEventListener('click', handleRedirect);
+        // Helper: The logic that actually fires the request
+        function proceedWithSubmission() {
+          console.log("Submitting...");
+          const submitButton = document.getElementById("submit-answers-button");
+          submitButton.textContent = "SUBMITTING...";
+          submitButton.disabled = true;
 
-      function handleRedirect() {
-        console.log('Navigating to next round...');
+          window.scrollTo({ top: 0, behavior: "smooth" });
 
-        const availableRounds = getCleanRoundsArray();
-        let nextRound = availableRounds.find(r => r > currentRound);
+          const formData = new FormData(form);
+          // ROUND 0 only
+          if (currentRound === 0) {
+            form.querySelectorAll(".q-block").forEach((block) => {
+              const label = block.querySelector("label");
+              if (
+                label &&
+                label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)
+              ) {
+                const teamVal = block.querySelector("input").value;
+                CacheManager.set(venueKeys.TEAM_NAME, teamVal);
+              }
+              if (
+                label &&
+                label.textContent.toUpperCase().includes(HEADER_DOUBLE_ROUND)
+              ) {
+                const selectElement = block.querySelector("select");
+                if (selectElement && selectElement.value) {
+                  setDoubleRound(selectElement.value);
+                }
+              }
+            });
+            CacheManager.set(
+              venueKeys.REGISTRATION_TIME,
+              new Date().getTime().toString(),
+            );
+          }
 
-        if (currentRound === 0 && (nextRound === undefined || nextRound === null)) {
-          const numericRounds = availableRounds.filter(r => r > 0);
-          if (numericRounds.length > 0) nextRound = numericRounds[0];
+          const summaryHtml = buildSummaryTable(form);
+
+          const finalizeSubmission = () => {
+            console.log("Finalizing submission...");
+            markRoundComplete(currentRound);
+            if (currentRound === 0) {
+              CacheManager.clear(`plt_round_${vId}_`);
+            } else {
+              CacheManager.clear(roundKeyPrefix);
+            }
+
+            if (currentRound === 0) {
+              //handleRedirect();
+            } else {
+              showRoundSummary(summaryHtml);
+            }
+          };
+
+          console.log("Form data prepared, sending to server...");
+          console.log("Form Data:", Object.fromEntries(formData.entries()));
+          const directFormUrl = appData.directFormUrl || "";
+          fetch(directFormUrl + "/formResponse", {
+            method: "POST",
+            body: new URLSearchParams(formData),
+            mode: "no-cors",
+          })
+            .then(() => {
+              finalizeSubmission();
+            })
+            .catch((err) => {
+              console.log("Fetch handled via fallback:", err);
+              finalizeSubmission();
+            });
+
+          console.log("Submitted");
         }
 
-        const finalRound = availableRounds.length > 0 ? Math.max(...availableRounds) : null;
-
-        if (nextRound !== undefined && nextRound !== null && !isNaN(nextRound)) {
-          if (nextRound === 0) {
-            CacheManager.clear(`plt_venue_${vId}_`);
+        function markRoundComplete(roundId) {
+          console.log("Round Complete:", roundId);
+          let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+          const rString = roundId.toString();
+          if (!completed.includes(rString)) {
+            completed.push(rString);
+            CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
           }
-          navDestUrl(nextRound);
-        } else {
-          // Final/invalid Round Detected
-          if (currentRound === finalRound) {
-            CacheManager.remove(venueKeys.DOUBLE_ROUND);
-            CacheManager.remove(venueKeys.COMPLETED_ROUNDS);
-          }
-          const confirmationText = appData.confirmationText || 'Your responses have been submitted!';
-          showSuccessScreen(confirmationText);
         }
 
-        console.log('Navigated');
-      }
+        function showRoundSummary(html) {
+          toggleLoading(true, 1000);
+          console.log("Show Round Summary");
+          toggleVisibility(form, false);
 
-      function showSuccessScreen(message) {
-        console.log('Showing success screen...');
-        const displayArea = document.getElementById('confirmation-text');
-        if (displayArea) { displayArea.innerHTML = message || "Your responses have been submitted!"; }
-        const overlay = document.getElementById('success-overlay');
-        if (overlay) { toggleVisibility(overlay, true); }
-        console.log('Success screen displayed');
-      }
+          // Hide progress indicator when viewing the summary table
+          const pContainer = document.getElementById("form-progress");
+          if (pContainer) toggleVisibility(pContainer, false);
 
-    })();
-  </script>
-</body>
+          const stickyTitle = document.getElementById("round-title");
+          if (stickyTitle) {
+            stickyTitle.textContent =
+              currentRound === 0
+                ? "Registration Summary"
+                : `Your Submitted Round #${currentRound} Answers`;
+          }
 
+          const desc = document.getElementById("round-description");
+          if (desc) toggleVisibility(desc, false);
+
+          document.getElementById("summary-panel").innerHTML = html;
+
+          const availableRounds = getCleanRoundsArray();
+          const finalRound =
+            availableRounds.length > 0 ? Math.max(...availableRounds) : null;
+          const btnContinue = document.getElementById("btnContinue");
+
+          if (btnContinue && currentRound === finalRound) {
+            btnContinue.textContent = "CONTINUE";
+          }
+
+          const roundSummary = document.getElementById("round-summary");
+          if (roundSummary) toggleVisibility(roundSummary, true);
+        }
+
+        function buildSummaryTable(formElement) {
+          const table = document.createElement("table");
+          table.style.cssText = "width:100%; border-collapse:collapse;";
+
+          formElement
+            .querySelectorAll(".q-block")
+            .forEach((block, index, array) => {
+              const label = block
+                .querySelector("label")
+                .textContent.replace(/\*/g, "")
+                .trim();
+              const input = block.querySelector("input, select");
+
+              if (input && input.type !== "hidden") {
+                const row = table.insertRow();
+                const isLast = index === array.length - 1;
+                row.style.borderBottom = isLast
+                  ? "none"
+                  : "1px solid var(--plt-color-border-med)";
+
+                const labelCell = row.insertCell();
+                labelCell.textContent = label;
+                labelCell.style.cssText =
+                  "padding:10px 15px 10px 0; font-weight:bold; color:var(--plt-color-gray-med); font-size:0.9em; width:50%;";
+
+                const valueCell = row.insertCell();
+                valueCell.textContent = input.value;
+                valueCell.style.cssText =
+                  "padding:10px 0; color:var(--plt-color-black-pure);";
+              }
+            });
+
+          return table.outerHTML;
+        }
+
+        document
+          .getElementById("btnContinue")
+          .addEventListener("click", handleRedirect);
+
+        function handleRedirect() {
+          console.log("Navigating to next round...");
+
+          const availableRounds = getCleanRoundsArray();
+          let nextRound = availableRounds.find((r) => r > currentRound);
+
+          if (
+            currentRound === 0 &&
+            (nextRound === undefined || nextRound === null)
+          ) {
+            const numericRounds = availableRounds.filter((r) => r > 0);
+            if (numericRounds.length > 0) nextRound = numericRounds[0];
+          }
+
+          const finalRound =
+            availableRounds.length > 0 ? Math.max(...availableRounds) : null;
+
+          if (
+            nextRound !== undefined &&
+            nextRound !== null &&
+            !isNaN(nextRound)
+          ) {
+            if (nextRound === 0) {
+              CacheManager.clear(`plt_venue_${vId}_`);
+            }
+            navDestUrl(nextRound);
+          } else {
+            // Final/invalid Round Detected
+            if (currentRound === finalRound) {
+              CacheManager.remove(venueKeys.DOUBLE_ROUND);
+              CacheManager.remove(venueKeys.COMPLETED_ROUNDS);
+            }
+            const confirmationText =
+              appData.confirmationText || "Your responses have been submitted!";
+            showSuccessScreen(confirmationText);
+          }
+
+          console.log("Navigated");
+        }
+
+        function showSuccessScreen(message) {
+          console.log("Showing success screen...");
+          const displayArea = document.getElementById("confirmation-text");
+          if (displayArea) {
+            displayArea.innerHTML =
+              message || "Your responses have been submitted!";
+          }
+          const overlay = document.getElementById("success-overlay");
+          if (overlay) {
+            toggleVisibility(overlay, true);
+          }
+          console.log("Success screen displayed");
+        }
+      })();
+    </script>
+  </body>
 </html>
