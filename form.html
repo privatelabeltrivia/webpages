@@ -137,6 +137,7 @@
 
   <script>
 
+
     // Configuration Constants
     const CONFIG = {
       API_ENDPOINT: 'https://script.google.com/macros/s/AKfycbzSKsXsSkuCtLr3kC8OxIcFqdQdakD7Ux1_-07K7KSMYjt0DDCSyj2qX2h3OG1o4OU9/exec',
@@ -171,8 +172,10 @@
       get: (key, defaultValue = null) => {
         try {
           const value = localStorage.getItem(key);
+          console.log(`Cache get: ${key} = ${value}`);
           if (!value) return defaultValue;
-          return JSON.parse(value);
+          const stringValue = typeof value === 'object' ? JSON.parse(value) : String(value);
+          return stringValue;
         } catch {
           return defaultValue;
         }
@@ -189,14 +192,26 @@
       }
     };
 
+    // Constants for this module
+    const KEY_REGISTRATION_TIME = 'registration_time';
+    const KEY_TEAM_NAME = 'team_name';
+    const KEY_DOUBLE_ROUND = 'bonus_round';
+    const KEY_COMPLETED_ROUNDS = 'completed_rounds';
+
+    const vId = new URLSearchParams(window.location.search).get('venueId') || '';
+    const currentRound = parseInt(new URLSearchParams(window.location.search).get('round') || 0, 10);
+
+    const venueKeys = STORAGE_KEYS.getVenueKeys(vId);
+    const roundKeyPrefix = STORAGE_KEYS.getRoundPrefix(vId, currentRound);
+
+    const HEADER_TEAM_NAME = 'TEAM NAME';
+    const HEADER_DOUBLE_ROUND = 'DOUBLE-POINTS CHOICE';
+
     // Global Data Variable
     let appData = {};
-
     
     getFormData();
     
-    
-
     function renderPage(data) {
       console.log("1. Set Theme Color");
       if (data.themeColor) {
@@ -244,6 +259,7 @@
       console.log("6. Populate Questions");
       if (data.questions && Array.isArray(data.questions)) {
         renderQuestions(data);
+        restoreFormFromCache();
       }
       
       console.log("7. Dynamic Progress Tracker");
@@ -327,6 +343,8 @@
           <input type="email" name="email" id="userEmail" placeholder="your@email.com" required>
         `;
         container.appendChild(emailBlock);
+        const emailInput = document.getElementById('userEmail');
+        emailInput.value = foundEmail;
       } else {
         const hiddenInput = document.createElement('input');
         hiddenInput.type = 'hidden';
@@ -382,6 +400,35 @@
         button.addEventListener('click', () => handleNavClick(rNum));
         container.appendChild(button);
       });
+    }
+
+    function restoreFormFromCache() {
+      console.log('Restoring form data from cache...');
+      const form = document.getElementById('trivia-form');
+      if (!form) return;
+
+      form.querySelectorAll('.q-block').forEach(block => {
+        const input = block.querySelector('input');
+        const select = block.querySelector('select');
+        const label = block.querySelector('label');
+        
+        const field = input || select;
+        if (!field) return;
+
+        // 1. Handle "Team Name" logic
+        if (label && label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)) {
+          const teamVal = CacheManager.get(venueKeys.TEAM_NAME);
+          if (teamVal) field.value = teamVal;
+        }
+
+        // 2. Restore cached value
+        const key = roundKeyPrefix + field.name;
+        const cached = CacheManager.get(key);
+        console.log(`Restoring ${field.name} from cache with key ${key}:`, cached);
+        if (cached) field.value = cached;
+      });
+
+      console.log('Form restored');
     }
 
     async function getFormData() {
@@ -565,20 +612,6 @@
     }
 
     (function() {
-      // Constants for this module
-      const KEY_REGISTRATION_TIME = 'registration_time';
-      const KEY_TEAM_NAME = 'team_name';
-      const KEY_DOUBLE_ROUND = 'bonus_round';
-      const KEY_COMPLETED_ROUNDS = 'completed_rounds';
-
-      const vId = appData.venueId || new URLSearchParams(window.location.search).get('venueId') || '';
-      const currentRound = parseInt(appData.roundNum || new URLSearchParams(window.location.search).get('round') || 0, 10);
-
-      const venueKeys = STORAGE_KEYS.getVenueKeys(vId);
-      const roundKeyPrefix = STORAGE_KEYS.getRoundPrefix(vId, currentRound);
-
-      const HEADER_TEAM_NAME = 'TEAM NAME';
-      const HEADER_DOUBLE_ROUND = 'DOUBLE-POINTS CHOICE';
 
       function setDoubleRound(selectValue) {
         const match = selectValue.match(/(\d+)/);
@@ -669,6 +702,7 @@
       // PROGRESS BAR
       function updateProgressBar() {
         if (!form) return;
+        console.log("Updating progress bar...");
         
         // Select only visible inputs
         const inputs = Array.from(form.querySelectorAll('input[type="text"], input[type="email"], select')).filter(input => {
@@ -693,16 +727,18 @@
         });
 
         if (inputs.length === 0) return;
+        console.log(`Found ${inputs.length} visible inputs for progress calculation.`);
 
         const filledCount = inputs.filter(input => input.value.trim() !== "").length;
         const percentage = Math.round((filledCount / inputs.length) * 100);
         const text = filledCount + " / " + inputs.length + " answered";
 
-      const pContainer = document.getElementById('form-progress');
-      const pFill = document.getElementById('progress-bar__fill');
-      const pText = document.getElementById('progress-bar__label');
+        const pContainer = document.getElementById('form-progress');
+        const pFill = document.getElementById('progress-bar__fill');
+        const pText = document.getElementById('progress-bar__label');
 
         if (pContainer && pFill) {
+          console.log(`Progress: ${percentage}% (${text})`);
           toggleVisibility(pContainer, true);
           pFill.style.width = percentage + "%";
           pText.textContent = text;
@@ -796,7 +832,7 @@
         const savedTeam = CacheManager.get(venueKeys.TEAM_NAME);
         if (savedTeam) {
           teamDisplay.textContent = 'Team: ' + savedTeam;
-          toggleVisibiliy(teamDisplay, true);
+          toggleVisibility(teamDisplay, true);
         }
 
         if (badgeDoubleRound) {
@@ -840,6 +876,9 @@
             if (dot) dot.classList.add('current');
           }
         });
+
+        updateDuplicateStates();
+        updateProgressBar();
       });
 
       console.log('Setting up form listeners...');
@@ -861,42 +900,6 @@
         }
 
         updateProgressBar();
-      });
-
-      window.addEventListener('load', () => {
-        console.log('Loading form data...');
-
-        // Load cached inputs
-        form.querySelectorAll('.q-block').forEach(block => {
-          const input = block.querySelector('input');
-          const select = block.querySelector('select');
-          const label = block.querySelector('label');
-          
-          const field = input || select;
-          if (!field) return;
-
-          // 1. Handle "Team Name" logic
-          if (label && label.textContent.toUpperCase().includes(HEADER_TEAM_NAME)) {
-            const teamVal = CacheManager.get(venueKeys.TEAM_NAME);
-            if (teamVal) {
-              field.value = teamVal;
-            }
-          }
-
-          // 2. Restore cached value
-          const key = roundKeyPrefix + field.name;
-          const cached = CacheManager.get(key);
-          if (cached) {
-            field.value = cached;
-          }
-        });
-
-        updateDuplicateStates();
-
-        // Run initial load bar sizing based on recovered storage
-        updateProgressBar();
-
-        console.log('Loaded');
       });
 
       // Submission Logic
@@ -974,23 +977,28 @@
         const summaryHtml = buildSummaryTable(form);
 
         const finalizeSubmission = () => {
+          console.log('Finalizing submission...');
           markRoundComplete(currentRound);
           CacheManager.clear(roundKeyPrefix);
 
           if (currentRound === 0) {
-            handleRedirect();
+            //handleRedirect();
           } else {
             showRoundSummary(summaryHtml);
           }
         };
 
+        console.log('Form data prepared, sending to server...');
+        console.log('Form Data:', Object.fromEntries(formData.entries()));
         const directFormUrl = appData.directFormUrl || '';
         fetch(directFormUrl + "/formResponse", {
           method: 'POST',
           body: new URLSearchParams(formData),
           mode: 'no-cors'
         })
-        .then(() => { finalizeSubmission(); })
+        .then(() => { 
+          finalizeSubmission(); 
+        })
         .catch((err) => { 
           console.log("Fetch handled via fallback:", err);
           finalizeSubmission(); 
