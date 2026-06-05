@@ -841,12 +841,34 @@
     // This is your "Global Data Variable"
     let appData = {};
 
-    getFormData();      
+    getFormData();  
+    renderPage(appData);
 
-    function renderPage() {
-      // Now you reference it like a normal JavaScript object
-      document.querySelector('.header-logo').src = appData.headerSrc;
-      document.getElementById('venueNameDisplay').innerText = appData.venueName;
+    function renderPage(data) {
+      // 1. Basic Text
+      document.getElementById('venueNameDisplay').innerText = data.venueName || '';
+      document.getElementById('round-title').innerText = data.roundTitle || '';
+      
+      // 2. Images (Handle potential missing src)
+      const headerLogo = document.querySelector('.header-logo');
+      if (headerLogo) headerLogo.src = data.headerSrc || data.headerUrl || '';
+    
+      // 3. Dynamic Progress Tracker (Looping logic)
+      const tracker = document.getElementById('progressTrackerContainer');
+      tracker.innerHTML = ''; // Clear existing
+      if (data.availableRounds) {
+        data.availableRounds.forEach(rNum => {
+          const dot = document.createElement('div');
+          dot.className = 'dot';
+          dot.id = `dot-${rNum}`;
+          dot.innerText = rNum == 0 ? "R" : rNum;
+          tracker.appendChild(dot);
+        });
+      }
+    
+      // 4. Hide Overlay
+      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('roundSummary').style.display = 'block';
     }
 
     function getFormData() {
