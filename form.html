@@ -582,40 +582,25 @@
 
   <!-- NEW: Loading Overlay placed at the very top -->
   <div id="loadingOverlay" class="loadingOverlay">
-    <? if (headerSrc) { ?>
-      <img src="<?!= headerSrc ?>" class="loading-logo">
-    <? } else { ?>
-      <? if (headerUrl) { ?>
-        <img src="<?= headerUrl ?>" class="loading-logo">
-      <? } ?>
-    <? } ?>
+    <img id="loading-logo" class="loading-logo">
   </div>
 
   <div class="container">
     <!-- STICKY TOP SECTION (Venue + Round Title) -->
 
     <div class="header">
-        <? if (headerSrc) { ?> 
-          <img src="<?!= headerSrc ?>" class="header-logo"> 
-        <? } else { ?>
-          <? if (headerUrl) { ?> 
-            <img src="<?= headerUrl ?>" class="header-logo"> 
-          <? } ?>
-        <? } ?>
-        <h1 style="margin:0; font-size: 1.5em;"><?= venueName ?></h1>
+        <img id="header-logo" class="header-logo"> 
+        <h1 id="venueNameDisplay" style="margin:0; font-size: 1.5em;"></h1>
     </div>
 
     <div class="sticky-header-bar">
       <div id="teamNameDisplay" class="teamNameDisplay"></div>
-      <? if (roundTitle) { ?> 
-        <div class="round-title-container">
+        <div id="round-title-container" class="round-title-container">
           <div class="title-container">
             <span id="round-title" class="round-title-label"><?= roundTitle ?></span>
             <span id="badge-double" class="badge-double">2x Points</span>
           </div>
         </div>
-        
-      <? } ?>
       
     </div>
 
@@ -848,10 +833,12 @@
       // 1. Basic Text
       document.getElementById('venueNameDisplay').innerText = data.venueName || '';
       document.getElementById('round-title').innerText = data.roundTitle || '';
+      const roundTitleContainer = document.getElementById('round-title-container');
+      if (!data.roundTile) roundTitleContainer.style.display = 'hidden';
       
       // 2. Images (Handle potential missing src)
-      const headerLogo = document.querySelector('.header-logo');
-      if (headerLogo) headerLogo.src = data.headerSrc || data.headerUrl || '';
+      const headerLogo = document.getElementById('header-logo');
+      if (data.headerSrc) headerLogo.src = data.headerSrc || data.headerUrl || '';
     
       // 3. Dynamic Progress Tracker (Looping logic)
       const tracker = document.getElementById('progressTrackerContainer');
