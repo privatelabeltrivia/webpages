@@ -166,7 +166,7 @@
       set: (key, value) => {
         const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
         localStorage.setItem(key, stringValue);
-        console.log(`Cache set: ${key}`);
+        console.log(`Cache set: ${key} = ${stringValue}`);
       },
       get: (key, defaultValue = null) => {
         try {
@@ -192,9 +192,9 @@
     // Global Data Variable
     let appData = {};
 
-    document.addEventListener('DOMContentLoaded', () => {
-        getFormData();
-    });
+    
+    getFormData();
+    
     
 
     function renderPage(data) {
@@ -210,7 +210,7 @@
       document.getElementById('app-version').textContent = 'Build: ' + (data.appVersion || '');
       
       const roundTitleContainer = document.getElementById('round-title-container');
-      if (!data.roundTitle) roundTitleContainer.style.display = 'none';
+      if (!data.roundTitle) toggleVisibility(roundTitleContainer,false);
       
       console.log("3. Set Images");
       const headerLogo = document.getElementById('header-logo');
@@ -238,7 +238,7 @@
       if (data.roundDescription) {
         const descDiv = document.getElementById('round-description');
         descDiv.innerHTML = data.roundDescription;
-        descDiv.style.display = 'block';
+        toggleVisibility(descDiv, true);
       }
       
       console.log("6. Populate Questions");
@@ -271,40 +271,55 @@
       const triviaForm = document.getElementById('trivia-form');
       const roundSelectionPrompt = document.getElementById('round-selection-prompt');
       const standardFormLink = document.getElementById('standardFormLink');
-      
+
+      console.log("9a. Venue Validation:", data.isValidVenue);
+      console.log("9b. Round Validation:", data.isValidRound);
+
       if (!data.isValidVenue) {
-        venueNotFound.style.display = 'block';
-        venueSelectContainer.style.display = 'block';
-        triviaForm.style.display = 'none';
+        toggleVisibility(venueNotFound, true);
+        toggleVisibility(venueSelectContainer, true);
+        toggleVisibility(triviaForm, false);
       } else {
-        venueNotFound.style.display = 'none';
-        venueSelectContainer.style.display = 'none';
-        roundSelectionPrompt.style.display = 'block';
-        
+        toggleVisibility(venueNotFound, false);
+        toggleVisibility(venueSelectContainer, false);
+        toggleVisibility(roundSelectionPrompt, true);
+
         if (!data.isValidRound) {
-          roundNotFound.style.display = 'block';
-          triviaForm.style.display = 'none';
+          toggleVisibility(roundNotFound, true);
+          toggleVisibility(triviaForm, false);
         } else {
-          roundNotFound.style.display = 'none';
-          triviaForm.style.display = 'flex';
+          console.log("Round is valid - showing form");
+          toggleVisibility(roundNotFound, false);
+          toggleVisibility(triviaForm, true);
         }
       }
       
       if (data.directFormUrl) {
         standardFormLink.href = data.directFormUrl + '/viewform';
-        standardFormLink.style.display = 'block';
+        toggleVisibility(standardFormLink, true);
       }
       
       console.log("10. Hide Overlay");
-      document.getElementById('loading-overlay').style.display = 'none';
+      const loadingOverlay = document.getElementById('loading-overlay');
+      if (loadingOverlay) toggleVisibility(loadingOverlay, false);
+
     }
     
     function renderQuestions(data) {
       const container = document.getElementById('questionsContainer');
       container.innerHTML = '';
+
+      const cacheEmail = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL) || '';
+      console.log('Cache Email:', cacheEmail);
+      const appDataEmail = appData.emailFromUrl || '';
+      console.log('App Data Email:', appDataEmail);
+      const urlEmail = new URLSearchParams(window.location.search).get('email') || '';
+      console.log('Email from App Data:', appDataEmail);
+      const foundEmail = appDataEmail || urlEmail || cacheEmail;
+      console.log('Email found:', foundEmail);
       
       // Add Email field if needed
-      if (!data.emailFromUrl || data.roundNum === 0) {
+      if (!foundEmail || data.roundNum === 0) {
         const emailBlock = document.createElement('div');
         emailBlock.className = 'q-block';
         emailBlock.innerHTML = `
@@ -317,7 +332,7 @@
         hiddenInput.type = 'hidden';
         hiddenInput.name = 'email';
         hiddenInput.id = 'userEmail';
-        hiddenInput.value = data.emailFromUrl;
+        hiddenInput.value = foundEmail;
         container.appendChild(hiddenInput);
       }
       
@@ -373,7 +388,7 @@
       try {
         const params = new URLSearchParams(window.location.search);
         const venueId = params.get('venueId');
-        const round = params.get('round');
+        const round = params.get('round') || 0;
 
         if (!venueId || round === null) {
           showError('Missing venue or round information in URL');
@@ -394,9 +409,10 @@
         }
         toggleLoading(true);
         appData = await response.json();
+        console.log('Data received from Apps Script:', appData);
         renderPage(appData);
         toggleLoading(false);
-        console.log('Data received from Apps Script:', appData);
+        
       } catch (error) {
         console.error('Failed to fetch form data:', error);
         showError('Unable to load form. Please refresh and try again.');
@@ -461,8 +477,13 @@
 
     function updateFontSize(className) {
       const SIZES = ['size-small', 'size-normal', 'size-large', 'size-larger', 'size-largest'];
-      document.body.classList.remove(...SIZES);
-      document.body.classList.add(className);
+      
+      // Use documentElement (the <html> tag) instead of body
+      const root = document.documentElement;
+      
+      root.classList.remove(...SIZES);
+      root.classList.add(className);
+      
       CacheManager.set(STORAGE_KEYS.SYSTEM.FONT_SIZE, className);
     }
 
@@ -472,6 +493,18 @@
       document.getElementById('fontSizeSelector').value = savedSize;
       document.body.classList.add(savedSize);
     });
+
+    function toggleVisibility(el, show) {
+      if (el) {
+        if (show) {
+          console.log('Show element:', el.id);
+         if(el.classList.contains('hidden')) el.classList.remove('hidden');
+        } else {
+          console.log('Hide element:', el.id);
+          if (!el.classList.contains('hidden')) el.classList.add('hidden');
+        }
+      }
+    }
 
     /**
      * Toggles the loading screen
@@ -670,7 +703,7 @@
       const pText = document.getElementById('progress-bar__label');
 
         if (pContainer && pFill) {
-          pContainer.style.display = 'block';
+          toggleVisibility(pContainer, true);
           pFill.style.width = percentage + "%";
           pText.textContent = text;
         }
@@ -756,21 +789,25 @@
             CacheManager.remove(venueKeys.COMPLETED_ROUNDS);
           }
 
-          if (teamDisplay) teamDisplay.style.display = 'none';
-          if (badgeDoubleRound) badgeDoubleRound.style.display = 'none';
+          if (teamDisplay) toggleVisibility(teamDisplay, false);
+          if (badgeDoubleRound) toggleVisibility(badgeDoubleRound, false);
         }
 
         const savedTeam = CacheManager.get(venueKeys.TEAM_NAME);
         if (savedTeam) {
           teamDisplay.textContent = 'Team: ' + savedTeam;
-          teamDisplay.style.display = 'block';
+          toggleVisibiliy(teamDisplay, true);
         }
 
         if (badgeDoubleRound) {
           const doubleRound = getDoubleRound();
           console.log('Double Round:', doubleRound);
           const isDouble = currentRound === 5 || currentRound === parseInt(doubleRound);
-          badgeDoubleRound.style.display = isDouble ? 'inline-block' : 'none';
+          if (isDouble) {
+            toggleVisibility(badgeDoubleRound, true);
+          } else {
+            toggleVisibility(badgeDoubleRound, false);
+          }
         }
 
         const completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
@@ -785,10 +822,11 @@
             if (rNum === currentRound) {  //&& currentRound !== 0
               showCompletedWarning(rNum);
               
-              // HIDE THE FORM
               const form = document.getElementById('trivia-form');
+              // HIDE THE FORM
+              console.log('Hiding form for completed round:', rNum);
               if (form) {
-                form.style.display = 'none';
+                toggleVisibility(form, false);
               }
               
             }  
@@ -804,23 +842,15 @@
         });
       });
 
+      console.log('Setting up form listeners...');
       if (!form) return;
-
-      const emailInput = document.getElementById('userEmail');
-      const urlEmail = appData.emailFromUrl || new URLSearchParams(window.location.search).get('email') || '';
-      
-      if (emailInput) {
-        const savedEmail = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL);
-        if (urlEmail) { 
-          emailInput.value = urlEmail; 
-          CacheManager.set(STORAGE_KEYS.SYSTEM.EMAIL, urlEmail); 
-        } else if (savedEmail) { 
-          emailInput.value = savedEmail; 
-        }
-        emailInput.addEventListener('input', (e) => { CacheManager.set(STORAGE_KEYS.SYSTEM.EMAIL, e.target.value); });
-      }
+      console.log('Form found:', form.id);
 
       form.addEventListener('input', (e) => {
+        if (e.target.name && e.target.id === 'userEmail') {
+          CacheManager.set(STORAGE_KEYS.SYSTEM.EMAIL, e.target.value);
+        }
+
         if (e.target.name && e.target.id !== 'userEmail') { 
           const key = roundKeyPrefix + e.target.name;
           CacheManager.set(key, e.target.value); 
@@ -982,11 +1012,11 @@
       function showRoundSummary(html) {
         toggleLoading(true, 1000);
         console.log('Show Round Summary');
-        form.style.display = 'none';
-        
+        toggleVisibility(form, false);
+
         // Hide progress indicator when viewing the summary table
         const pContainer = document.getElementById('form-progress');
-        if (pContainer) pContainer.style.display = 'none';
+        if (pContainer) toggleVisibility(pContainer, false);
 
         const stickyTitle = document.getElementById('round-title');
         if (stickyTitle) {
@@ -994,8 +1024,8 @@
         }
         
         const desc = document.getElementById('round-description');
-        if (desc) desc.style.display = 'none';
-        
+        if (desc) toggleVisibility(desc, false);
+
         document.getElementById('summary-panel').innerHTML = html;
 
         const availableRounds = getCleanRoundsArray();
@@ -1006,7 +1036,8 @@
           btnContinue.textContent = 'CONTINUE';
         }
 
-        document.getElementById('round-summary').style.display = 'block';
+        const roundSummary = document.getElementById('round-summary');
+        if (roundSummary) toggleVisibility(roundSummary, true);
       }
 
       function buildSummaryTable(formElement) {
@@ -1073,7 +1104,7 @@
         const displayArea = document.getElementById('confirmation-text');
         if (displayArea) { displayArea.innerHTML = message || "Your responses have been submitted!"; }
         const overlay = document.getElementById('success-overlay');
-        if (overlay) { overlay.style.display = 'flex'; }
+        if (overlay) { toggleVisibility(overlay, true); }
         console.log('Success screen displayed');
       }
 
