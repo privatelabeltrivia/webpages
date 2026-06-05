@@ -3,586 +3,14 @@
 
 <head>
   <base target="_top">
-  <style>
-    :root {
-      --plt-color-primary: #1a73e8;
-      
-      --plt-color-text-main: #333;
-      --plt-color-text-primary: #444;
-      --plt-color-text-secondary: #666;
-      --plt-color-text-hint: #999;
-
-      --plt-color-border-light: #eee;
-      --plt-color-border-med: #ddd;
-      
-      --plt-color-error-bg: #fff3f3;
-      --plt-color-error-border: #f5c6cb;
-      --plt-color-error-text: #721c24;
-      
-      --plt-color-warning-bg: #fff8e1;
-      --plt-color-warning-border: #ffe082;
-      --plt-color-warning-text: #856404;
-
-      --background-body: #f0f2f5; /*light gray*/
-
-      --google-color-blue: #1a73e8;
-      --google-color-purple: #6750a4;
-      --google-color-gray: #747775;
-      --google-color-bg: #f8f9fa;
-      --google-color-form-text: #1f1f1f;
-
-      --font-size-base: 100%;
-
-      --plt-color-red-med-dark: #d93025;
-      --plt-color-red-pale: #fff3f3;
-      --plt-color-red-soft: #f5c6cb;
-      --plt-color-red-maroon: #721c24;
-
-      --plt-color-black-pure: #000;
-      --plt-color-white-pure: #fff;
-
-      --plt-color-section-bg: #f9f9f9;
-      --plt-color-disabled: #f0f0f0;
-      --plt-color-soft-dividers: #ddd;
-      
-      --plt-color-gray-very-light: #fafafa; /*f9f9f9*/
-      --plt-color-gray-med-light: #999;     /*Hints/Placeholders*/
-      --plt-color-gray-light: #eee;         /*REMOVE? f0f0f0, f8f8f8, ddd*/
-      --plt-color-gray-med: #666;           /*SECONDARY TEXT*/
-      --plt-color-gray-dark: #444;          /*PRIMARY TEXT*/
-      --plt-color-gray-very-dark: #333;     /*HEADINGS*/
-
-
-      
-    }
-
-    .size-small   { --font-size-base: 0.8rem; }
-    .size-normal  { --font-size-base: 1rem; }
-    .size-large   { --font-size-base: 1.2rem; }
-    .size-larger  { --font-size-base: 1.5rem; }
-    .size-largest { --font-size-base: 2rem; }
-
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      background: var(--background-body);
-      font-size: var(--font-size-base);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background: var(--plt-color-white-pure);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .content {
-      flex: 1 0 auto;
-      width: 100%;
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-    }
-
-    /* Unified Styling for Email and Text boxes */
-    input[type="text"],
-    input[type="email"],
-    select {
-      width: 100%;
-      padding: 0.8em;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-      box-sizing: border-box;
-      background-color: var(--plt-color-white-pure);
-      transition: border-color 0.2s;
-    }
-
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--plt-color-primary);
-      box-shadow: 0 0 0 2px rgba(var(--plt-color-primary), 0.1);
-    }
-
-    select:hover {
-       border-color: var(--plt-color-primary);
-    }
-
-    select {
-      cursor: pointer;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .header {
-      background: var(--plt-color-primary);
-      color: var(--plt-color-white-pure);
-      text-align: center;
-      text-transform: uppercase;
-      padding: 15px 15px;
-      box-sizing: border-box;
-    }
-
-    .header-logo {
-      display: block;
-      margin: 0 auto 8px auto;
-      width: 100%;
-      border-radius: 8px;
-      background: var(--plt-color-white-pure);
-      padding: 3px;
-      box-sizing: border-box;
-    }
-
-    .header-wrapper {
-      position: -webkit-sticky; /* Support for Safari */
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: var(--plt-color-white-pure);
-    }
-      
-    .footer {
-      padding: 15px 20px;
-      text-align: center;
-      border-top: 1px solid var(--plt-color-gray-light);
-      background: #fdfdfd;
-      height: auto;
-      flex-shrink: 0;
-      display: block;
-    }
-
-    .sticky-header-bar {
-      background: var(--plt-color-white-pure);
-      width: 100%;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 10px -1px rgba(0,0,0,0.1);
-      flex-shrink: 0;
-    }
-
-    .accessibility-bar {
-      display: flex;
-      justify-content: flex-end; /* Tucks everything to the right */
-      align-items: center;       /* Vertically centers label and select */
-      gap: 10px;                 /* Adds breathing room between label and select */
-      
-      font-family: sans-serif;
-      font-size: 0.9em;
-      color: #4a5568;
-      margin: 10px 10px 15px 10px;
-    }
-
-    .accessibility-select {
-      /*appearance: none;*/
-      background-color: var(--plt-color-white-pure);
-      border: 1px solid #d1d9e0;
-      border-radius: 6px;
-      padding: 6px 10px; /* Right padding for the arrow */
-      cursor: pointer;
-      outline: none;
-      width: auto;
-      min-width: 100px;
-      max-width: 300px;
-      background-repeat: no-repeat;
-      background-position: right 8px top 50%;
-      background-size: 8px auto;
-      text-align: left;
-    }
-
-    .teamNameDisplay {
-      text-align: center;
-      font-weight: 700;
-      color: var(--plt-color-gray-dark);
-      font-size: 0.85em;
-      text-transform: uppercase;
-      padding-top: 5px;
-      letter-spacing: 1px;
-      display: none;
-    }
-
-    .title-container {
-      display: flex;
-      align-items: center; /* Vertically aligns text and badge */
-      justify-content: center; /* Centers the whole group */
-      position: relative; /* Allows positioning the badge to the right */
-    }
-
-    .round-title-container {
-      padding: 5px 20px 5px 20px;
-      text-align: center;
-      font-size: 1.3em;
-      font-weight: 800;
-      color: var(--plt-color-primary);
-      background: var(--plt-color-white-pure);
-      text-transform: uppercase;
-      border-bottom: 2px solid var(--plt-color-gray-light);
-    }
-
-    .round-title-label {
-      max-width:50%;
-    }  
-
-    .badge-double {
-      right: 0;
-      position: absolute;
-      display: inline-block;
-      background-color: var(--plt-color-primary);
-      color: var(--plt-color-white-pure);
-      padding: 6px 12px; 
-      font-size: 0.5em;
-      border-radius: 4px;
-      text-transform: uppercase;
-      vertical-align: middle;
-      margin: auto;
-      letter-spacing: 1px;
-      animation: pulseBadge 3s infinite ease-in-out;
-    }
-
-    @keyframes pulseBadge {
-      0% { 
-        background-color: var(--plt-color-primary); 
-        color: var(--plt-color-white-pure); 
-        transform: scale(1);
-      }
-      50% { 
-        /* You can change these to any colors you like */
-        background-color: var(--plt-color-primary); 
-        color: var(--plt-color-white-pure);  
-        /*border: 1px solid var(--plt-color-primary);*/
-        transform: scale(1.2); /* Slight zoom for extra attention */
-      }
-      100% { 
-        background-color: var(--plt-color-primary); 
-        color: var(--plt-color-white-pure); 
-        transform: scale(1);
-      }
-    }
-
-    .warningPrompt {
-      background: var(--plt-color-red-pale);
-      border: 1px solid var(--plt-color-red-soft);
-      color: var(--plt-color-red-maroon);
-      padding: 20px;
-      margin: 20px;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: 600;
-      line-height: 1.4;
-    }
-
-    .triviaProgressBarContainer {
-      position: sticky;
-      bottom: 0;
-      z-index: 999;
-      width: 100%;
-      height: 60px; /* Provides extra padding */
-      display: none;
-      background: var(--plt-color-white-pure);
-      border-top: 1px solid var(--plt-color-gray-light);
-      box-shadow: 0 -4px 10px -2px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-      padding: 0 20px;
-      margin-top: 10px;
-    }
-
-    .triviaProgressBar {
-      position: relative;
-      top: 10px;
-      left: 0px;
-      width: 100%;
-      height: 40px;
-      background-color: var(--plt-color-gray-light);
-      border-radius: 8px;
-      overflow: hidden; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .triviaProgressFill {
-      height: 100%;
-      background-color: var(--plt-color-primary);
-      width: 0%;
-      transition: width 0.3s ease;
-      position: absolute;
-      left: 0px;
-      top: 0;
-      z-index: 1;
-    }
-
-    .triviaProgressText {
-      position: relative;
-      z-index: 2; /* Sits above the bar */
-      font-size: 0.9em;
-      color: var(--plt-color-white-pure);
-      mix-blend-mode: difference; /* This creates the magic inversion effect */
-      pointer-events: none;
-    }
-
-    .progress-tracker {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      background: var(--plt-color-white-pure);
-      padding: 10px 0;
-      border-bottom: 1px solid var(--plt-color-gray-light);
-    }
-
-    /* The Description: Subtle and Scrolls with the questions */
-    .round-description {
-      padding: 20px;
-      color: var(--plt-color-gray-med);
-      font-size: 0.95em;
-      line-height: 1.5;
-      background: var(--plt-color-gray-very-light);
-      white-space: pre-line;
-      border-bottom: 1px solid var(--plt-color-gray-light);
-      margin-bottom: 10px;
-    }
-
-    .q-block {
-      margin-top: 15px;
-      margin-bottom: 10px;
-      padding: 0 20px;
-    }
-
-    .q-block label { /* Question Titles */
-      display: block;
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 1em;
-      color: #333;
-    }
-
-    .q-description {
-      font-size:0.85em;
-      color:var(--plt-color-gray-med);
-      margin: -4px 0 10px 0;
-    }
-
-    .required-asterisk {
-      color: var(--plt-color-red-med-dark);
-      margin-left: 4px;
-      font-weight: bold;
-    }
-
-    .roundSubmitBtn {
-      background: var(--plt-color-primary);
-      color: var(--plt-color-white-pure);
-      border: none;
-      width: 100%;
-      padding: 1em;
-      border-radius: 8px;
-      font-size: 1.2em;
-      font-weight: bold;
-      transition: opacity 0.2s;
-    }
-
-    .roundSubmitBtn:active {
-      opacity: 0.8;
-    }
-
-    .venue-select-container {
-      padding: 0 20px;
-      display: flex;
-      flex-direction: column;
-      max-height: 100%; 
-      height: auto;
-    }
-
-    .round-btn {
-      display: block;
-      background: var(--plt-color-gray-light);
-      color: #333;
-      text-align: center;
-      padding: 15px;
-      margin: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .nav-pills {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .pill {
-      border: none;
-      padding: 12px 20px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 0.9em;
-      font-weight: bold;
-    }
-    
-    .pill-active {
-      background: var(--plt-color-primary);
-      color: var(--plt-color-white-pure);
-    }
-
-    .pill-inactive {
-      background: var(--plt-color-gray-light);
-      color: #333;
-    }
-
-    .pill.disabled {
-      background: #e0e0e0 !important;
-      color: var(--plt-color-gray-med-light) !important;
-      cursor: not-allowed;
-      opacity: 0.6;
-      pointer-events: none; /* This kills the click physically */
-    }
-
-    .pill.completed {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none; /* This physically stops the click from working */
-      text-decoration: none;
-    }
-
-    .dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #f0f0f0;
-      color: #aaa;
-      font-size: 0.6em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
-    }
-
-    .dot.completed {
-      background: var(--plt-color-primary);
-      color: var(--plt-color-white-pure);
-      border-color: var(--plt-color-primary);
-    }
-
-    .dot.current {
-      border-color: var(--plt-color-primary);
-      color: var(--plt-color-primary);
-      background: var(--plt-color-white-pure);
-    }
-
-    #triviaForm {
-      flex-grow: 1; 
-      display: flex;
-      flex-direction: column;
-      padding-bottom: 80px;
-    }
-    
-    .venueList {
-      height: auto;
-      max-height: 50vh; 
-      min-height: 50px;
-      margin: 10px 0 20px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: var(--plt-color-white-pure);
-      width: 100%;
-      overflow-y: auto;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    /* This targets the options specifically when they are selected */
-    .venueList option:checked {
-      background-color: var(--plt-color-primary) !important;
-      background-image: linear-gradient(0deg, var(--plt-color-primary) 0%, var(--plt-color-primary) 100%);
-      color: var(--plt-color-white-pure) !important;
-    }
-
-    /* This helps for some mobile browsers */
-    .venueList option:hover {
-      background-color: #f0f0f0;
-    }
-
-    /* Removes the default focus ring which can look messy with the border-radius */
-    .venueList:focus {
-      outline: none;
-      border-color: var(--plt-color-primary);
-    }
-
-    /* Loading Overlay Styles */
-    .loadingOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.8);
-      z-index: 9999;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      /*animation: swirlBackground 5s linear infinite;*/
-    }
-
-    @keyframes swirlBackground {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.1); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
-    @keyframes pulseZoom {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.3); } /* Zoom in effect */
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-logo {
-      width: 500px; /* Adjust size as needed */
-      height: 100px;
-      border-radius: 8px;
-      padding: 5px;
-      border: 10px solid var(--plt-color-primary);
-      /*animation: spin 2s linear infinite;*/
-      animation: pulseZoom 2s ease-in-out infinite;
-    }
-
-    .summaryTable {
-      background:#f9f9f9;
-      border-radius:8px;
-      padding:15px; 
-      margin-bottom:20px; 
-      border:1px solid var(--plt-color-gray-light);
-    }
-
-    .success-logo { max-width: 90%; margin-bottom: 20px; border-radius: 8px; background: var(--plt-color-white-pure); padding: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-
-  </style>
+  <link rel="stylesheet" href="formstyles.css">
 </head>
 
 <body>
 
   <!-- NEW: Loading Overlay placed at the very top -->
-  <div id="loadingOverlay" class="loadingOverlay">
-    <img id="loading-logo" class="loading-logo">
+  <div id="loading-overlay" class="loading-overlay">
+    <img id="loading-logo" class="overlay-logo">
   </div>
 
   <div class="container">
@@ -590,11 +18,11 @@
 
     <div class="header">
         <img id="header-logo" class="header-logo"> 
-        <h1 id="venueNameDisplay" style="margin:0; font-size: 1.5em;"></h1>
+        <h1 id="venue-name" class="venue-name"></h1>
     </div>
 
     <div class="sticky-header-bar">
-      <div id="teamNameDisplay" class="teamNameDisplay"></div>
+      <div id="team-name-display" class="team-name-display"></div>
         <div id="round-title-container" class="round-title-container">
           <div class="title-container">
             <span id="round-title" class="round-title-label"></span>
@@ -604,7 +32,7 @@
       
     </div>
 
-    <div id="accessibility-bar" class="accessibility-bar">
+    <div id="accessibility-bar" class="accessibility-toolbar">
       <label for="fontSizeSelector">Font Size:</label>
       <select id="fontSizeSelector" class="accessibility-select" onchange="updateFontSize(this.value)">
         <option value="size-small">Small</option>
@@ -617,81 +45,80 @@
 
     <!-- PROGRESS TRACKER START -->
     
-      <div id="progressTrackerContainer" class="progress-tracker">
+      <div id="progress-tracker" class="progress-tracker">
         
       </div>
 
     <!-- PROGRESS TRACKER END -->
 
-    <div id="content" class="content" role="main">
+    <div id="main-content" class="main-content" role="main">
       
-      <div id="venueNotFound" class="warningPrompt" style="display: none;" role="alert">
+      <div id="venue-not-found" class="alert-banner alert-banner--error hidden" role="alert">
         <strong>Venue Not Found!</strong><br/>
         Please rescan your QR code or ask for assistance.
       </div>
       
-      <div id="venueSelectContainer" class="venue-select-container" style="display: none;">
-        <p style="color:var(--plt-color-gray-med);">Search or select your venue to join the game:</p>
+      <div id="venue-selection" class="venue-selection hidden">
+        <p class="venue-selection-intro">Search or select your venue to join the game:</p>
         <label for="searchBox">Search venues:</label>
         <input type="text" id="searchBox" onkeyup="filterVenues()" placeholder="Type to filter venues..." aria-label="Search venues">
-        <label for="venueList">Select your venue:</label>
-        <select id="venueList" class="venueList" multiple onchange="handleVenueSelection(this)" size="10" aria-label="Venue list"></select>
-        <button onclick="joinGame()" class="roundSubmitBtn" style="margin-bottom:20px;">JOIN GAME</button>
+        <label for="venue-list">Select your venue:</label>
+        <select id="venue-list" class="venue-list" multiple onchange="handleVenueSelection(this)" size="10" aria-label="Venue list"></select>
+        <button onclick="joinGame()" class="button button--primary button--block button--spaced">JOIN GAME</button>
       </div>
 
-      <div id="roundSummary" style="display:none; padding: 20px;">
-        <div id="summaryTable" class="summaryTable" role="region" aria-label="Submission summary"></div>
-        <button id="btnContinue" class="roundSubmitBtn">CONTINUE TO NEXT ROUND</button>
+      <div id="round-summary" class="round-summary hidden">
+        <div id="summary-panel" class="summary-panel" role="region" aria-label="Submission summary"></div>
+        <button id="btnContinue" class="button button--primary">CONTINUE TO NEXT ROUND</button>
       </div>
 
-      <div id="roundNotFound" class="warningPrompt" style="display: none;" role="alert">
+      <div id="round-not-found" class="alert-banner alert-banner--error hidden" role="alert">
         <strong>Round Not Found!</strong><br/>
         Please navigate to current round at the bottom.<br/>
         If the game is over, you can return to the landing page.
       </div>
 
-      <form id="triviaForm" style="display: none;" role="form" aria-label="Trivia questions form">
-        <div id="round-description" class="round-description" style="display: none;" role="complementary" aria-label="Round description"></div>
+      <form id="trivia-form" class="trivia-form hidden" role="form" aria-label="Trivia questions form">
+        <div id="round-description" class="round-description hidden" role="complementary" aria-label="Round description"></div>
         <fieldset>
           <legend>Trivia Questions</legend>
           <div id="questionsContainer"></div>
         </fieldset>
-        <div id="triviaProgressBarContainer" class="triviaProgressBarContainer" style="display: none;" role="progressbar" aria-label="Form completion progress" aria-valuemin="0" aria-valuemax="100">
-          <div id="triviaProgressBar" class="triviaProgressBar">
-            <div id="triviaProgressFill" class="triviaProgressFill"></div>
-            <div id="triviaProgressText" class="triviaProgressText" aria-live="polite"></div>
+        <div id="form-progress" class="form-progress hidden" role="progressbar" aria-label="Form completion progress" aria-valuemin="0" aria-valuemax="100">
+          <div id="progress-bar" class="progress-bar">
+            <div id="progress-bar__fill" class="progress-bar__fill"></div>
+            <div id="progress-bar__label" class="progress-bar__label" aria-live="polite"></div>
           </div>
         </div>
-        <div style="padding: 0 20px;">
-          <button id="roundSubmitBtn" type="submit" class="roundSubmitBtn">SUBMIT ANSWERS</button>
+        <div class="form-actions">
+          <button id="submit-answers-button" type="submit" class="button button--primary">SUBMIT ANSWERS</button>
         </div>
       </form>
 
-      <dialog id="submitConfirmDialog" style="border: none; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <p style="text-align: center">You have unanswered questions.<br/>Are you sure you want to submit?</p>
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button id="cancelSubmitBtn" style="padding: 8px 16px; cursor: pointer;">Go Back</button>
-          <button id="confirmSubmitBtn" style="padding: 8px 16px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 4px; cursor: pointer;">Submit Anyway</button>
+      <dialog id="submit-confirm-dialog" class="dialog">
+        <p class="dialog__text">You have unanswered questions.<br/>Are you sure you want to submit?</p>
+        <div class="dialog__actions">
+          <button id="cancel-submit-button" class="button button--secondary">Go Back</button>
+          <button id="confirm-submit-button" class="button button--danger">Submit Anyway</button>
         </div>
       </dialog>
 
     <!-- FOOTER NAV -->
-      <div class="footer" style="flex-shrink: 0;" role="contentinfo">
-        <div id="roundSelectionPrompt" style="color: var(--plt-color-primary); font-weight: bold; text-decoration: none; display: none; margin-bottom: 15px;" role="region" aria-label="Round navigation instructions">
+      <div class="footer" role="contentinfo">
+        <div id="round-selection-prompt" class="round-selection-prompt hidden" role="region" aria-label="Round navigation instructions">
           Not on the correct round?<br/>Select the current round or Register
         </div>
-        <div id="navPills" class="nav-pills" role="tablist" aria-label="Round selection navigation"></div>
-        <div style="margin-top: 25px;">
+        <div id="round-navigation" class="nav-tabs" role="tablist" aria-label="Round selection navigation"></div>
+        <div class="footer-links">
           <a id="standardFormLink" href="#" target="_blank"
-            style="color: var(--plt-color-gray-med-light); text-decoration: underline; font-size: 0.75em; display: none;" aria-label="Use standard Google Form if having trouble">
+            class="footer-link hidden" aria-label="Use standard Google Form if having trouble">
             Trouble? Use standard Google Form
           </a>
           <a href="https://privatelabeltrivia.com"
-            style="font-size: 0.7em; color: #ccc; text-transform: uppercase; letter-spacing: 1px; display: block; margin-top: 25px; margin-bottom: 25px;" aria-label="Powered By Private Label Trivia">
+            class="footer-credit" aria-label="Powered By Private Label Trivia">
             Powered By PLT
           </a>
-          <div id="appVersionDisplay" style="font-size: 0.6em; color: #ddd;\">
-          </div>
+          <div id="app-version" class="app-version-display"></div>
 
         </div>
 
@@ -700,16 +127,14 @@
   </div> <!-- END CONTAINER -->
 
   <!-- Branded Success Overlay -->
-  <div id="successOverlay"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:9999; justify-content:center; align-items:center; text-align:center; padding:20px; box-sizing:border-box;">
-    <div style="max-width:400px; width:100%;">
+  <div id="success-overlay" class="success-overlay hidden">
+    <div class="success-panel">
         <img id="success-logo" class="success-logo">
       
-      <h2 id="successVenueName" style="color: var(--plt-color-gray-med); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8em; margin-bottom: 5px;">
-      </h2>
-      <div style="font-size: 3em; margin-bottom: 10px;">🎉</div>
-      <h1 style="color:var(--plt-color-primary); margin-bottom:15px; font-weight: 800;">Thanks for playing!</h1>
-      <div id="confirmationTextDisplay" style="font-size:1.1em; color:var(--plt-color-gray-dark); line-height:1.6; margin-bottom:60px;"></div>
+      <h2 id="success-venue-name" class="success-venue-title"></h2>
+      <div class="success-icon">🎉</div>
+      <h1 class="success-title">Thanks for playing!</h1>
+      <div id="confirmation-text" class="success-text"></div>
     </div>
   </div>
 
@@ -780,10 +205,10 @@
       }
       
       // 2. Set Basic Text
-      document.getElementById('venueNameDisplay').textContent = data.venueName || '';
-      document.getElementById('successVenueName').textContent = data.venueName || '';
+      document.getElementById('venue-name').textContent = data.venueName || '';
+      document.getElementById('success-venue-name').textContent = data.venueName || '';
       document.getElementById('round-title').textContent = data.roundTitle || '';
-      document.getElementById('appVersionDisplay').textContent = 'Build: ' + (data.appVersion || '');
+      document.getElementById('app-version').textContent = 'Build: ' + (data.appVersion || '');
       
       const roundTitleContainer = document.getElementById('round-title-container');
       if (!data.roundTitle) roundTitleContainer.style.display = 'none';
@@ -798,7 +223,7 @@
     
       // 4. Populate Venue List
       if (data.allVenues && Array.isArray(data.allVenues)) {
-        const venueList = document.getElementById('venueList');
+        const venueList = document.getElementById('venue-list');
         venueList.innerHTML = '';
         data.allVenues.forEach(venue => {
           const option = createSelectOption(venue.id, venue.name, {
@@ -823,12 +248,12 @@
       }
       
       // 7. Dynamic Progress Tracker
-      const tracker = document.getElementById('progressTrackerContainer');
+      const tracker = document.getElementById('progress-tracker');
       tracker.innerHTML = '';
       if (data.availableRounds) {
         data.availableRounds.forEach(rNum => {
           const dot = document.createElement('div');
-          dot.className = 'dot';
+          dot.className = 'round-status-dot';
           dot.id = `dot-${rNum}`;
           dot.textContent = rNum === 0 ? 'R' : rNum;
           tracker.appendChild(dot);
@@ -841,11 +266,11 @@
       }
       
       // 9. Show/Hide Sections based on validation
-      const venueNotFound = document.getElementById('venueNotFound');
-      const venueSelectContainer = document.getElementById('venueSelectContainer');
-      const roundNotFound = document.getElementById('roundNotFound');
-      const triviaForm = document.getElementById('triviaForm');
-      const roundSelectionPrompt = document.getElementById('roundSelectionPrompt');
+      const venueNotFound = document.getElementById('venue-not-found');
+      const venueSelectContainer = document.getElementById('venue-selection');
+      const roundNotFound = document.getElementById('round-not-found');
+      const triviaForm = document.getElementById('trivia-form');
+      const roundSelectionPrompt = document.getElementById('round-selection-prompt');
       const standardFormLink = document.getElementById('standardFormLink');
       
       if (!data.isValidVenue) {
@@ -929,14 +354,14 @@
     }
     
     function renderNavPills(data) {
-      const container = document.getElementById('navPills');
+      const container = document.getElementById('round-navigation');
       container.innerHTML = '';
       
       data.availableRounds.forEach(rNum => {
         const button = document.createElement('button');
         button.type = 'button';
         button.id = `pill-${rNum}`;
-        button.className = `pill ${data.roundNum === rNum ? 'pill-active' : 'pill-inactive'}`;
+        button.className = `round-tab ${data.roundNum === rNum ? 'round-tab--active' : 'round-tab--inactive'}`;
         button.textContent = rNum === 0 ? 'R' : rNum;
         button.setAttribute('role', 'tab');
         button.setAttribute('aria-selected', data.roundNum === rNum ? 'true' : 'false');
@@ -980,10 +405,9 @@
 
     function showError(message) {
       const errorDiv = document.createElement('div');
-      errorDiv.className = 'warningPrompt';
-      errorDiv.style.cssText = 'background: var(--plt-color-error-bg); border: 1px solid var(--plt-color-error-border); margin: 20px;';
+      errorDiv.className = 'alert-banner alert-banner--error';
       errorDiv.textContent = message;
-      document.getElementById('content').prepend(errorDiv);
+      document.getElementById('main-content').prepend(errorDiv);
     }
 
 
@@ -1007,7 +431,7 @@
     // Search Filtering Logic
     function filterVenues() {
       const input = document.getElementById('searchBox').value.toUpperCase();
-      const select = document.getElementById('venueList');
+      const select = document.getElementById('venue-list');
       const options = select.getElementsByTagName('option');
 
       for (let i = 0; i < options.length; i++) {
@@ -1027,7 +451,7 @@
     }
     
     function joinGame() {
-      const sel = document.getElementById('venueList');
+      const sel = document.getElementById('venue-list');
       if (sel.value) {
         window.top.location.href = window.location.pathname + '?venueId=' + encodeURIComponent(sel.value);
       } else {
@@ -1135,8 +559,8 @@
         return CacheManager.get(venueKeys.DOUBLE_ROUND);
       }
 
-      const form = document.getElementById('triviaForm');
-      const teamDisplay = document.getElementById('teamNameDisplay');
+      const form = document.getElementById('trivia-form');
+      const teamDisplay = document.getElementById('team-name-display');
       const badgeDoubleRound = document.getElementById('badge-double');
       
       function getCleanRoundsArray() {
@@ -1239,9 +663,9 @@
         const percentage = Math.round((filledCount / inputs.length) * 100);
         const text = filledCount + " / " + inputs.length + " answered";
 
-        const pContainer = document.getElementById('triviaProgressBarContainer');
-        const pFill = document.getElementById('triviaProgressFill');
-        const pText = document.getElementById('triviaProgressText');
+const pContainer = document.getElementById('form-progress');
+      const pFill = document.getElementById('progress-bar__fill');
+      const pText = document.getElementById('progress-bar__label');
 
         if (pContainer && pFill) {
           pContainer.style.display = 'block';
@@ -1252,12 +676,11 @@
 
       // Completed warning
       function showCompletedWarning(roundNum) {
-        const content = document.getElementById('content');
+        const content = document.getElementById('main-content');
         
         // Create a unique container so we don't duplicate it
         const warningDiv = document.createElement('div');
-        warningDiv.className = 'warningPrompt';
-        warningDiv.style.cssText = "background: var(--plt-color-warning-bg); border: 1px solid var(--plt-color-warning-border); color: #856404; margin-bottom: 20px;";
+        warningDiv.className = 'alert-banner alert-banner--warning';
         
         warningDiv.innerHTML = `
           <strong>You have already submitted answers for Round ${roundNum}!</strong>
@@ -1361,7 +784,7 @@
               showCompletedWarning(rNum);
               
               // HIDE THE FORM
-              const form = document.getElementById('triviaForm');
+              const form = document.getElementById('trivia-form');
               if (form) {
                 form.style.display = 'none';
               }
@@ -1446,12 +869,12 @@
 
       // Submission Logic
  
-      document.getElementById('cancelSubmitBtn').addEventListener('click', () => {
-        document.getElementById('submitConfirmDialog').close();
+      document.getElementById('cancel-submit-button').addEventListener('click', () => {
+        document.getElementById('submit-confirm-dialog').close();
       });
 
-      document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
-        document.getElementById('submitConfirmDialog').close();
+      document.getElementById('confirm-submit-button').addEventListener('click', () => {
+        document.getElementById('submit-confirm-dialog').close();
         proceedWithSubmission();
       });
 
@@ -1482,7 +905,7 @@
         });
 
         if (emptyFields.length > 0) {
-          document.getElementById('submitConfirmDialog').showModal();
+          document.getElementById('submit-confirm-dialog').showModal();
         } else {
           proceedWithSubmission();
         }
@@ -1491,7 +914,7 @@
       // Helper: The logic that actually fires the request
       function proceedWithSubmission() {
         console.log('Submitting...');
-        const submitButton = document.getElementById('roundSubmitBtn');
+        const submitButton = document.getElementById('submit-answers-button');
         submitButton.textContent = 'SUBMITTING...';
         submitButton.disabled = true;
 
@@ -1560,7 +983,7 @@
         form.style.display = 'none';
         
         // Hide progress indicator when viewing the summary table
-        const pContainer = document.getElementById('triviaProgressBarContainer');
+        const pContainer = document.getElementById('form-progress');
         if (pContainer) pContainer.style.display = 'none';
 
         const stickyTitle = document.getElementById('round-title');
@@ -1571,7 +994,7 @@
         const desc = document.getElementById('round-description');
         if (desc) desc.style.display = 'none';
         
-        document.getElementById('summaryTable').innerHTML = html;
+        document.getElementById('summary-panel').innerHTML = html;
 
         const availableRounds = getCleanRoundsArray();
         const finalRound = availableRounds.length > 0 ? Math.max(...availableRounds) : null;
@@ -1581,7 +1004,7 @@
           btnContinue.textContent = 'CONTINUE';
         }
 
-        document.getElementById('roundSummary').style.display = 'block';
+        document.getElementById('round-summary').style.display = 'block';
       }
 
       function buildSummaryTable(formElement) {
@@ -1645,9 +1068,9 @@
 
       function showSuccessScreen(message) {
         console.log('Showing success screen...');
-        const displayArea = document.getElementById('confirmationTextDisplay');
+        const displayArea = document.getElementById('confirmation-text');
         if (displayArea) { displayArea.innerHTML = message || "Your responses have been submitted!"; }
-        const overlay = document.getElementById('successOverlay');
+        const overlay = document.getElementById('success-overlay');
         if (overlay) { overlay.style.display = 'flex'; }
         console.log('Success screen displayed');
       }
