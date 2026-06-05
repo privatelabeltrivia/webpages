@@ -297,7 +297,7 @@
       }
       
       // 10. Hide Overlay
-      document.getElementById('loadingOverlay').style.display = 'none';
+      document.getElementById('loading-overlay').style.display = 'none';
     }
     
     function renderQuestions(data) {
@@ -480,7 +480,7 @@
      * @param {function} callback - optional function to run after hiding
      */
     function toggleLoading(show, duration = 2000, callback = null) {
-      const overlay = document.getElementById('loadingOverlay');
+      const overlay = document.getElementById('loading-overlay');
       if (!overlay) return;
 
       if (show) {
@@ -663,7 +663,7 @@
         const percentage = Math.round((filledCount / inputs.length) * 100);
         const text = filledCount + " / " + inputs.length + " answered";
 
-const pContainer = document.getElementById('form-progress');
+      const pContainer = document.getElementById('form-progress');
       const pFill = document.getElementById('progress-bar__fill');
       const pText = document.getElementById('progress-bar__label');
 
