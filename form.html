@@ -192,7 +192,9 @@
     // Global Data Variable
     let appData = {};
 
-    getFormData();  
+    document.addEventListener('DOMContentLoaded', () => {
+        getFormData();
+    });
     
 
     function renderPage(data) {
