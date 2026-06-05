@@ -80,10 +80,7 @@
 
       <form id="trivia-form" class="trivia-form hidden" role="form" aria-label="Trivia questions form">
         <div id="round-description" class="round-description hidden" role="complementary" aria-label="Round description"></div>
-        <fieldset>
-          <legend>Trivia Questions</legend>
-          <div id="questionsContainer"></div>
-        </fieldset>
+        <div id="questionsContainer"></div>
         <div id="form-progress" class="form-progress hidden" role="progressbar" aria-label="Form completion progress" aria-valuemin="0" aria-valuemax="100">
           <div id="progress-bar" class="progress-bar">
             <div id="progress-bar__fill" class="progress-bar__fill"></div>
@@ -199,12 +196,12 @@
     
 
     function renderPage(data) {
-      // 1. Set Theme Color
+      console.log("1. Set Theme Color");
       if (data.themeColor) {
         document.documentElement.style.setProperty('--plt-color-primary', data.themeColor);
       }
       
-      // 2. Set Basic Text
+      console.log("2. Set Basic Text");
       document.getElementById('venue-name').textContent = data.venueName || '';
       document.getElementById('success-venue-name').textContent = data.venueName || '';
       document.getElementById('round-title').textContent = data.roundTitle || '';
@@ -213,7 +210,7 @@
       const roundTitleContainer = document.getElementById('round-title-container');
       if (!data.roundTitle) roundTitleContainer.style.display = 'none';
       
-      // 3. Set Images
+      console.log("3. Set Images");
       const headerLogo = document.getElementById('header-logo');
       if (data.headerSrc) headerLogo.src = data.headerSrc || data.headerUrl || '';
       const loadingLogo = document.getElementById('loading-logo');
@@ -221,7 +218,7 @@
       const successLogo = document.getElementById('success-logo');
       if (data.successSrc) successLogo.src = data.successSrc || data.successUrl || '';
     
-      // 4. Populate Venue List
+      console.log("4. Populate Venue List");
       if (data.allVenues && Array.isArray(data.allVenues)) {
         const venueList = document.getElementById('venue-list');
         venueList.innerHTML = '';
@@ -235,19 +232,19 @@
         venueList.size = Math.min(data.allVenues.length, CONFIG.MAX_VENUE_LIST_HEIGHT);
       }
       
-      // 5. Populate Round Description
+      console.log("5. Populate Round Description");
       if (data.roundDescription) {
         const descDiv = document.getElementById('round-description');
         descDiv.innerHTML = data.roundDescription;
         descDiv.style.display = 'block';
       }
       
-      // 6. Populate Questions
+      console.log("6. Populate Questions");
       if (data.questions && Array.isArray(data.questions)) {
         renderQuestions(data);
       }
       
-      // 7. Dynamic Progress Tracker
+      console.log("7. Dynamic Progress Tracker");
       const tracker = document.getElementById('progress-tracker');
       tracker.innerHTML = '';
       if (data.availableRounds) {
@@ -260,12 +257,12 @@
         });
       }
       
-      // 8. Populate Navigation Pills
+      console.log("8. Populate Navigation Pills");
       if (data.availableRounds && data.isValidVenue) {
         renderNavPills(data);
       }
       
-      // 9. Show/Hide Sections based on validation
+      console.log("9. Show/Hide Sections based on validation");
       const venueNotFound = document.getElementById('venue-not-found');
       const venueSelectContainer = document.getElementById('venue-selection');
       const roundNotFound = document.getElementById('round-not-found');
@@ -296,7 +293,7 @@
         standardFormLink.style.display = 'block';
       }
       
-      // 10. Hide Overlay
+      console.log("10. Hide Overlay");
       document.getElementById('loading-overlay').style.display = 'none';
     }
     
