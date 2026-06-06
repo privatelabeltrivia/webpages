@@ -252,21 +252,20 @@
       // Cache Manager Utility
       const CacheManager = {
         set: (key, value) => {
-          const stringValue =
+          const result =
             typeof value === "object" ? JSON.stringify(value) : String(value);
-          localStorage.setItem(key, stringValue);
-          console.log(`Cache set: ${key} = ${stringValue}`);
+          localStorage.setItem(key, result);
+          console.log(`Cache set: ${key} = ${result}`);
         },
         get: (key, defaultValue = null) => {
+          const value = localStorage.getItem(key);
+          console.log(`Cache get: ${key} = ${value} ${typeof value}`);
+
+          if (!value) return defaultValue;
           try {
-            const value = localStorage.getItem(key);
-            console.log(`Cache get: ${key} = ${value}`);
-            if (!value) return defaultValue;
-            const stringValue =
-              typeof value === "object" ? JSON.parse(value) : String(value);
-            return stringValue;
+            return JSON.parse(value);
           } catch {
-            return defaultValue;
+            return String(value);
           }
         },
         remove: (key) => {
@@ -563,7 +562,7 @@
       async function getFormData() {
         try {
           const params = new URLSearchParams(window.location.search);
-          const venueId = params.get("venueId");
+          const venueId = params.get("venueId") || params.get("venueid");
           const round = params.get("round") || 0;
 
           if (!venueId || round === null) {
@@ -1257,7 +1256,9 @@
         function markRoundComplete(roundId) {
           console.log("Round Complete:", roundId);
           let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+          console.log("Previously completed rounds:", completed);
           const rString = roundId.toString();
+          console.log("Marking round as complete:", rString);
           if (!completed.includes(rString)) {
             completed.push(rString);
             CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
