@@ -8,7 +8,7 @@
   <body>
     <!-- NEW: Loading Overlay placed at the very top -->
     <div id="loading-overlay" class="loading-overlay">
-      <img id="loading-logo" class="overlay-logo" />
+      <img id="loading-logo" class="loading-logo" />
     </div>
 
     <div class="container">
@@ -242,6 +242,8 @@
           REGISTRATION_TIME: `plt_venue_${venueId}_registration_time`,
           COMPLETED_ROUNDS: `plt_venue_${venueId}_completed_rounds`,
           DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`,
+          HEADERSRC: `plt_venue_${venueId}_header_src`,
+          PRIMARY_COLOR: `plt_venue_${venueId}_primary_color`,
         }),
         getRoundPrefix: (venueId, roundNum) =>
           `plt_round_${venueId}_${roundNum}_`,
@@ -284,6 +286,7 @@
       const KEY_TEAM_NAME = "team_name";
       const KEY_DOUBLE_ROUND = "bonus_round";
       const KEY_COMPLETED_ROUNDS = "completed_rounds";
+      const KEY_HEADERSRC = "header_src";
 
       const vId =
         new URLSearchParams(window.location.search).get("venueId") || "";
@@ -328,6 +331,12 @@
         if (!data.roundTitle) toggleVisibility(roundTitleContainer, false);
 
         console.log("3. Set Images");
+        CacheManager.set(
+          venueKeys.HEADERSRC,
+          data.headerSrc || data.headerUrl || "",
+        );
+        CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
+
         const headerLogo = document.getElementById("header-logo");
         if (data.headerSrc)
           headerLogo.src = data.headerSrc || data.headerUrl || "";
@@ -426,6 +435,9 @@
         console.log("10. Hide Overlay");
         const loadingOverlay = document.getElementById("loading-overlay");
         if (loadingOverlay) toggleVisibility(loadingOverlay, false);
+
+        updateDuplicateStates();
+        updateProgressBar();
       }
 
       function renderQuestions(data) {
@@ -447,7 +459,7 @@
           const emailBlock = document.createElement("div");
           emailBlock.className = "q-block";
           emailBlock.innerHTML = `
-          <label>EMAIL ADDRESS <span class="required-asterisk">*</span></label>
+          <label for="userEmail" class="q-title">EMAIL ADDRESS <span class="required-asterisk">*</span></label>
           <input type="email" name="email" id="userEmail" placeholder="your@email.com" required>
         `;
           container.appendChild(emailBlock);
@@ -467,7 +479,7 @@
           const qBlock = document.createElement("div");
           qBlock.className = "q-block";
 
-          let label = `<label>${q.label}`;
+          let label = `<label for="q_${q.id}" class="q-title">${q.label}`;
           if (q.required) label += ' <span class="required-asterisk">*</span>';
           label += "</label>";
 
@@ -571,7 +583,7 @@
           if (!response.ok) {
             throw new Error(`API returned status ${response.status}`);
           }
-          toggleLoading(true);
+
           appData = await response.json();
           console.log("Data received from Apps Script:", appData);
           renderPage(appData);
@@ -663,6 +675,8 @@
 
       // On page load, apply the saved preference
       window.addEventListener("load", () => {
+        toggleLoading(true, 60000);
+
         const savedSize = CacheManager.get(
           STORAGE_KEYS.SYSTEM.FONT_SIZE,
           "size-normal",
@@ -690,6 +704,15 @@
        * @param {function} callback - optional function to run after hiding
        */
       function toggleLoading(show, duration = 2000, callback = null) {
+        const primaryColor = CacheManager.get(venueKeys.PRIMARY_COLOR);
+        document.documentElement.style.setProperty(
+          "--plt-color-primary",
+          primaryColor,
+        );
+        const loadingSrc = CacheManager.get(venueKeys.HEADERSRC);
+        const loadingLogo = document.getElementById("loading-logo");
+        loadingLogo.alt = "Loading...";
+        if (!loadingLogo.src) loadingLogo.src = loadingSrc;
         const overlay = document.getElementById("loading-overlay");
         if (!overlay) return;
 
@@ -747,6 +770,135 @@
         navDestUrl(targetRound);
       }
 
+      function updateDuplicateStates() {
+        const form = document.getElementById("trivia-form");
+        const selects = Array.from(form.querySelectorAll("select"));
+
+        if (selects.length === 0) {
+          console.warn(
+            "updateDuplicateStates: No <select> elements found in form.",
+          );
+          return;
+        }
+        if (!selects[0].options) {
+          console.warn(
+            "updateDuplicateStates: First select element has no options.",
+          );
+          return;
+        }
+
+        // 1. Get all unique available options (excluding the "Select..." placeholder)
+        // We assume the first option is the placeholder, so we take options from index 1 onwards
+        const allAvailableOptions = Array.from(selects[0].options).filter(
+          (o) => o.value !== "",
+        );
+
+        // 2. Only run the logic if there are more options than select boxes
+        if (allAvailableOptions.length <= selects.length) {
+          // Optional: Reset all styles if condition isn't met
+          selects.forEach((s) => {
+            s.style.backgroundColor = "transparent";
+            Array.from(s.options).forEach((o) => {
+              // o.style.color = "var(--plt-color-black-pure)";
+              // o.style.backgroundColor = "";
+              // o.textContent = o.dataset.label;
+            });
+          });
+          return;
+        }
+
+        // 3. Count occurrences
+        const valueCounts = {};
+        selects.forEach((s) => {
+          if (s.value !== "") {
+            valueCounts[s.value] = (valueCounts[s.value] || 0) + 1;
+          }
+        });
+
+        // 4. Apply styles
+        selects.forEach((select) => {
+          const isDuplicated =
+            select.value !== "" && valueCounts[select.value] > 1;
+
+          Array.from(select.options).forEach((option) => {
+            if (option.value === "") return;
+
+            const isTakenElsewhere =
+              (valueCounts[option.value] || 0) > 0 &&
+              select.value !== option.value;
+
+            option.style.color = isTakenElsewhere
+              ? "#ccc"
+              : "var(--plt-color-black-pure)";
+            option.style.backgroundColor = isTakenElsewhere ? "#f8f8f8" : "";
+            option.textContent = isTakenElsewhere
+              ? `${option.dataset.label} (Already choosen)`
+              : option.dataset.label;
+          });
+
+          select.style.backgroundColor = isDuplicated
+            ? "#fffdf0"
+            : "transparent";
+          //select.style.border = isDuplicated ? "2px solid #ffb3b3" : "1px solid";
+        });
+      }
+
+      // PROGRESS BAR
+      function updateProgressBar() {
+        const form = document.getElementById("trivia-form");
+        if (!form) return;
+        console.log("Updating progress bar...");
+
+        // Select only visible inputs
+        const inputs = Array.from(
+          form.querySelectorAll(
+            'input[type="text"], input[type="email"], select',
+          ),
+        ).filter((input) => {
+          // input.id !== 'userEmail';
+
+          // 1. Skip hidden inputs
+          if (input.type === "hidden") return false;
+
+          if (currentRound > 1) {
+            // 2. Find the parent container
+            const parentBlock = input.closest(".q-block");
+            // 3. Find the label within that container and check its text
+            const label = parentBlock
+              ? parentBlock.querySelector("label")
+              : null;
+            const labelText = label ? label.textContent.toLowerCase() : "";
+            // 4. Return true if this is a "continuous clue"
+            const isContinuousClue = labelText.includes("continuous clue");
+            //return !isContinuousClue;
+          }
+
+          return true;
+        });
+
+        if (inputs.length === 0) return;
+        console.log(
+          `Found ${inputs.length} visible inputs for progress calculation.`,
+        );
+
+        const filledCount = inputs.filter(
+          (input) => input.value.trim() !== "",
+        ).length;
+        const percentage = Math.round((filledCount / inputs.length) * 100);
+        const text = filledCount + " / " + inputs.length + " answered";
+
+        const pContainer = document.getElementById("form-progress");
+        const pFill = document.getElementById("progress-bar__fill");
+        const pText = document.getElementById("progress-bar__label");
+
+        if (pContainer && pFill) {
+          console.log(`Progress: ${percentage}% (${text})`);
+          toggleVisibility(pContainer, true);
+          pFill.style.width = percentage + "%";
+          pText.textContent = text;
+        }
+      }
+
       (function () {
         function setDoubleRound(selectValue) {
           const match = selectValue.match(/(\d+)/);
@@ -776,133 +928,6 @@
             .map((n) => parseInt(n.trim(), 10))
             .filter((n) => !isNaN(n))
             .sort((a, b) => a - b);
-        }
-
-        function updateDuplicateStates() {
-          const selects = Array.from(form.querySelectorAll("select"));
-
-          if (selects.length === 0) {
-            console.warn(
-              "updateDuplicateStates: No <select> elements found in form.",
-            );
-            return;
-          }
-          if (!selects[0].options) {
-            console.warn(
-              "updateDuplicateStates: First select element has no options.",
-            );
-            return;
-          }
-
-          // 1. Get all unique available options (excluding the "Select..." placeholder)
-          // We assume the first option is the placeholder, so we take options from index 1 onwards
-          const allAvailableOptions = Array.from(selects[0].options).filter(
-            (o) => o.value !== "",
-          );
-
-          // 2. Only run the logic if there are more options than select boxes
-          if (allAvailableOptions.length <= selects.length) {
-            // Optional: Reset all styles if condition isn't met
-            selects.forEach((s) => {
-              s.style.backgroundColor = "transparent";
-              Array.from(s.options).forEach((o) => {
-                // o.style.color = "var(--plt-color-black-pure)";
-                // o.style.backgroundColor = "";
-                // o.textContent = o.dataset.label;
-              });
-            });
-            return;
-          }
-
-          // 3. Count occurrences
-          const valueCounts = {};
-          selects.forEach((s) => {
-            if (s.value !== "") {
-              valueCounts[s.value] = (valueCounts[s.value] || 0) + 1;
-            }
-          });
-
-          // 4. Apply styles
-          selects.forEach((select) => {
-            const isDuplicated =
-              select.value !== "" && valueCounts[select.value] > 1;
-
-            Array.from(select.options).forEach((option) => {
-              if (option.value === "") return;
-
-              const isTakenElsewhere =
-                (valueCounts[option.value] || 0) > 0 &&
-                select.value !== option.value;
-
-              option.style.color = isTakenElsewhere
-                ? "#ccc"
-                : "var(--plt-color-black-pure)";
-              option.style.backgroundColor = isTakenElsewhere ? "#f8f8f8" : "";
-              option.textContent = isTakenElsewhere
-                ? `${option.dataset.label} (Already choosen)`
-                : option.dataset.label;
-            });
-
-            select.style.backgroundColor = isDuplicated
-              ? "#fffdf0"
-              : "transparent";
-            //select.style.border = isDuplicated ? "2px solid #ffb3b3" : "1px solid";
-          });
-        }
-
-        // PROGRESS BAR
-        function updateProgressBar() {
-          if (!form) return;
-          console.log("Updating progress bar...");
-
-          // Select only visible inputs
-          const inputs = Array.from(
-            form.querySelectorAll(
-              'input[type="text"], input[type="email"], select',
-            ),
-          ).filter((input) => {
-            // input.id !== 'userEmail';
-
-            // 1. Skip hidden inputs
-            if (input.type === "hidden") return false;
-
-            if (currentRound > 1) {
-              // 2. Find the parent container
-              const parentBlock = input.closest(".q-block");
-              // 3. Find the label within that container and check its text
-              const label = parentBlock
-                ? parentBlock.querySelector("label")
-                : null;
-              const labelText = label ? label.textContent.toLowerCase() : "";
-              // 4. Return true if this is a "continuous clue"
-              const isContinuousClue = labelText.includes("continuous clue");
-              //return !isContinuousClue;
-            }
-
-            return true;
-          });
-
-          if (inputs.length === 0) return;
-          console.log(
-            `Found ${inputs.length} visible inputs for progress calculation.`,
-          );
-
-          const filledCount = inputs.filter(
-            (input) => input.value.trim() !== "",
-          ).length;
-          const percentage = Math.round((filledCount / inputs.length) * 100);
-          const text = filledCount + " / " + inputs.length + " answered";
-
-          const pContainer = document.getElementById("form-progress");
-          const pFill = document.getElementById("progress-bar__fill");
-          const pText = document.getElementById("progress-bar__label");
-
-          if (pContainer && pFill) {
-            console.log(`Progress: ${percentage}% (${text})`);
-            toggleVisibility(pContainer, true);
-            pFill.style.width = percentage + "%";
-            pText.textContent = text;
-          }
         }
 
         // Completed warning
@@ -989,6 +1014,7 @@
 
           const savedTeam = CacheManager.get(venueKeys.TEAM_NAME);
           if (savedTeam) {
+            console.log("Saved team name found:", savedTeam);
             teamDisplay.textContent = "Team: " + savedTeam;
             toggleVisibility(teamDisplay, true);
           }
@@ -1164,26 +1190,65 @@
             }
 
             if (currentRound === 0) {
-              //handleRedirect();
+              handleRedirect();
             } else {
               showRoundSummary(summaryHtml);
             }
           };
 
+          // 1. Get the entries from FormData
+          const entries = Array.from(formData.entries());
+          // 2. Map the entries to pull only the value (index 1 of the [key, value] pair)
+          const valuesOnlyArray = entries.map((entry) => entry[1]);
+          // 3. Add to your payload
+          const payload = {
+            action: "submit",
+            timestamp: new Date().toISOString(),
+            ssheetid: appData.venueSsheetId,
+            venueid: vId,
+            roundid: currentRound,
+            formdata: valuesOnlyArray, // This will be ["Item1", "Item2", "Item3", "Item4"]
+          };
+
+          // Use a simple for...of loop on the entries
+          // This is more compatible than formData.forEach
+          try {
+            for (let [key, value] of formData.entries()) {
+              payload[key] = value;
+            }
+          } catch (e) {
+            // Fallback for very restrictive environments
+            console.error(
+              "FormData iteration failed, using manual field mapping.",
+            );
+            // Manual fallback: iterate over your known form inputs
+            const inputs = form.querySelectorAll("input, select, textarea");
+            inputs.forEach((input) => {
+              if (input.name) payload[input.name] = input.value;
+            });
+          }
+
           console.log("Form data prepared, sending to server...");
           console.log("Form Data:", Object.fromEntries(formData.entries()));
-          const directFormUrl = appData.directFormUrl || "";
-          fetch(directFormUrl + "/formResponse", {
+          console.log("Payload:", payload);
+          fetch(CONFIG.API_ENDPOINT, {
             method: "POST",
-            body: new URLSearchParams(formData),
             mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
           })
             .then(() => {
               finalizeSubmission();
             })
             .catch((err) => {
               console.log("Fetch handled via fallback:", err);
-              finalizeSubmission();
+              showError(
+                "Submission failed. Please check your connection and try again.",
+              );
+              submitButton.textContent = "SUBMIT ANSWERS";
+              submitButton.disabled = false;
             });
 
           console.log("Submitted");
