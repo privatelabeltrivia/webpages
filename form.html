@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base target="_top" />
     <link rel="stylesheet" href="formstyles.css" />
   </head>
@@ -22,10 +23,8 @@
       <div class="sticky-header-bar">
         <div id="team-name-display" class="team-name-display"></div>
         <div id="round-title-container" class="round-title-container">
-          <div class="title-container">
-            <span id="round-title" class="round-title-label"></span>
-            <span id="badge-double" class="badge-double">2x Points</span>
-          </div>
+          <span id="round-title" class="round-title-label"></span>
+          <span id="badge-double" class="badge-double">2x Points</span>
         </div>
       </div>
 
@@ -212,7 +211,6 @@
     <div id="success-overlay" class="success-overlay hidden">
       <div class="success-panel">
         <img id="success-logo" class="success-logo" />
-
         <h2 id="success-venue-name" class="success-venue-title"></h2>
         <div class="success-icon">🎉</div>
         <h1 class="success-title">Thanks for playing!</h1>
@@ -242,7 +240,7 @@
           REGISTRATION_TIME: `plt_venue_${venueId}_registration_time`,
           COMPLETED_ROUNDS: `plt_venue_${venueId}_completed_rounds`,
           DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`,
-          HEADERSRC: `plt_venue_${venueId}_header_src`,
+          LOGOSRC: `plt_venue_${venueId}_header_src`,
           PRIMARY_COLOR: `plt_venue_${venueId}_primary_color`,
         }),
         getRoundPrefix: (venueId, roundNum) =>
@@ -259,13 +257,16 @@
         },
         get: (key, defaultValue = null) => {
           const value = localStorage.getItem(key);
-          console.log(`Cache get: ${key} = ${value} ${typeof value}`);
 
           if (!value) return defaultValue;
           try {
-            return JSON.parse(value);
+            const parsed = JSON.parse(value);
+            console.log(`Cache parsed JSON for key ${key}:`, parsed);
+            return parsed;
           } catch {
-            return String(value);
+            const stringValue = String(value);
+            console.log(`Cache returned string for key ${key}:`, stringValue);
+            return stringValue;
           }
         },
         remove: (key) => {
@@ -285,14 +286,11 @@
       const KEY_TEAM_NAME = "team_name";
       const KEY_DOUBLE_ROUND = "bonus_round";
       const KEY_COMPLETED_ROUNDS = "completed_rounds";
-      const KEY_HEADERSRC = "header_src";
+      const KEY_LOGOSRC = "logo_src";
 
-      const vId =
-        new URLSearchParams(window.location.search).get("venueId") || "";
-      const currentRound = parseInt(
-        new URLSearchParams(window.location.search).get("round") || 0,
-        10,
-      );
+      const params = new URLSearchParams(window.location.search);
+      const vId = params.get("venue") || "";
+      const currentRound = parseInt(params.get("round") || 0, 10);
 
       const venueKeys = STORAGE_KEYS.getVenueKeys(vId);
       const roundKeyPrefix = STORAGE_KEYS.getRoundPrefix(vId, currentRound);
@@ -330,21 +328,15 @@
         if (!data.roundTitle) toggleVisibility(roundTitleContainer, false);
 
         console.log("3. Set Images");
-        CacheManager.set(
-          venueKeys.HEADERSRC,
-          data.headerSrc || data.headerUrl || "",
-        );
+        CacheManager.set(venueKeys.LOGOSRC, data.logoSrc || data.logoSrc || "");
         CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
 
         const headerLogo = document.getElementById("header-logo");
-        if (data.headerSrc)
-          headerLogo.src = data.headerSrc || data.headerUrl || "";
+        if (data.logoSrc) headerLogo.src = data.logoSrc || data.logoUrl || "";
         const loadingLogo = document.getElementById("loading-logo");
-        if (data.loadingSrc)
-          loadingLogo.src = data.loadingSrc || data.loadingUrl || "";
+        if (data.logoSrc) loadingLogo.src = data.logoSrc || data.logoSrc || "";
         const successLogo = document.getElementById("success-logo");
-        if (data.successSrc)
-          successLogo.src = data.successSrc || data.successUrl || "";
+        if (data.logoSrc) successLogo.src = data.logoSrc || data.logoSrc || "";
 
         console.log("4. Populate Venue List");
         if (data.allVenues && Array.isArray(data.allVenues)) {
@@ -420,7 +412,6 @@
             toggleVisibility(roundNotFound, true);
             toggleVisibility(triviaForm, false);
           } else {
-            console.log("Round is valid - showing form");
             toggleVisibility(roundNotFound, false);
             toggleVisibility(triviaForm, true);
           }
@@ -437,6 +428,7 @@
 
         updateDuplicateStates();
         updateProgressBar();
+        updateCompletedRoundPills();
       }
 
       function renderQuestions(data) {
@@ -508,6 +500,11 @@
         const container = document.getElementById("round-navigation");
         container.innerHTML = "";
 
+        const completedRounds = CacheManager.get(
+          venueKeys.COMPLETED_ROUNDS,
+          [],
+        );
+
         data.availableRounds.forEach((rNum) => {
           const button = document.createElement("button");
           button.type = "button";
@@ -561,9 +558,8 @@
 
       async function getFormData() {
         try {
-          const params = new URLSearchParams(window.location.search);
-          const venueId = params.get("venueId") || params.get("venueid");
-          const round = params.get("round") || 0;
+          const venueId = vId;
+          const round = currentRound;
 
           if (!venueId || round === null) {
             showError("Missing venue or round information in URL");
@@ -702,23 +698,22 @@
        * @param {number} duration - time in ms to keep visible (if showing)
        * @param {function} callback - optional function to run after hiding
        */
-      function toggleLoading(show, duration = 2000, callback = null) {
+      function toggleLoading(show, duration = 60000, callback = null) {
         const primaryColor = CacheManager.get(venueKeys.PRIMARY_COLOR);
         document.documentElement.style.setProperty(
           "--plt-color-primary",
           primaryColor,
         );
-        const loadingSrc = CacheManager.get(venueKeys.HEADERSRC);
+        const logoSrc = CacheManager.get(venueKeys.LOGOSRC);
         const loadingLogo = document.getElementById("loading-logo");
         loadingLogo.alt = "Loading...";
-        if (!loadingLogo.src) loadingLogo.src = loadingSrc;
+        if (!loadingLogo.src) loadingLogo.src = logoSrc;
         const overlay = document.getElementById("loading-overlay");
         if (!overlay) return;
 
         if (show) {
           console.log("Show Loading");
-          overlay.style.display = "flex";
-          overlay.style.opacity = "1";
+          overlay.classList.remove("hide");
 
           // Auto-hide after specified duration
           setTimeout(() => {
@@ -726,10 +721,9 @@
           }, duration);
         } else {
           console.log("Hide Loading");
-          overlay.style.transition = "opacity 0.5s ease";
-          overlay.style.opacity = "0";
+          overlay.classList.add("hide");
           setTimeout(() => {
-            overlay.style.display = "none";
+            overlay.classList.add("hidden");
             if (callback) callback();
           }, 500);
         }
@@ -745,11 +739,10 @@
           console.warn("User email not found. Proceeding without email.");
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const venueId = params.get("venueId");
+        const venueId = vId;
         const destUrl =
           window.location.pathname +
-          "?venueId=" +
+          "?venue=" +
           encodeURIComponent(venueId) +
           "&round=" +
           roundNum +
@@ -842,6 +835,119 @@
         });
       }
 
+      function updateCompletedRoundPills() {
+        const completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+        const rList = getCleanRoundsArray();
+        console.log("Available rounds:", rList);
+
+        rList.forEach((rNum) => {
+          console.log(
+            "Checking round:",
+            rNum,
+            "Completed rounds in cache:",
+            completed,
+          );
+          const dot = document.getElementById("dot-" + rNum);
+          const pill = document.getElementById("pill-" + rNum);
+
+          if (completed.includes(rNum.toString())) {
+            console.log("Round", rNum, "is marked as completed in cache.");
+            // Check if the user is currently ON this round
+            if (rNum === currentRound) {
+              //&& currentRound !== 0
+              showCompletedWarning(rNum);
+
+              const form = document.getElementById("trivia-form");
+              // HIDE THE FORM
+              console.log("Hiding form for completed round:", rNum);
+              if (form) {
+                toggleVisibility(form, false);
+              }
+            }
+
+            if (dot) dot.classList.add("completed");
+            if (pill) {
+              pill.style.opacity = "0.5";
+              pill.classList.add("completed");
+            }
+          } else if (rNum === currentRound) {
+            if (dot) dot.classList.add("current");
+          }
+        });
+      }
+
+      function getCleanRoundsArray() {
+        const raw = appData.availableRounds || [];
+        if (Array.isArray(raw)) {
+          return raw.sort((a, b) => a - b);
+        }
+        return raw
+          .split(",")
+          .map((n) => parseInt(n.trim(), 10))
+          .filter((n) => !isNaN(n))
+          .sort((a, b) => a - b);
+      }
+
+      // Completed warning
+      function showCompletedWarning(roundNum) {
+        const content = document.getElementById("main-content");
+
+        // Create a unique container so we don't duplicate it
+        const warningDiv = document.createElement("div");
+        warningDiv.className = "alert-banner alert-banner--warning";
+
+        warningDiv.innerHTML = `
+          <strong>You have already submitted answers for Round ${roundNum}!</strong>
+          <br/>
+          If this is not correct please reset the round.
+          <br/><br/>
+          <button id="btnReset" style="padding: 10px 20px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 5px; cursor: pointer;">
+            RESET ROUND
+          </button>
+          <dialog id="confirmDialog" style="border: none; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <p>Are you sure you want to reset this round?<br/>All current answers will be cleared.</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+              <button id="cancelBtn" style="padding: 8px 16px; cursor: pointer;">Cancel</button>
+              <button id="confirmBtn" style="padding: 8px 16px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 4px; cursor: pointer;">Yes, Reset</button>
+            </div>
+          </dialog>
+          <br/><br/>
+          Or select the current round below.
+        `;
+
+        content.prepend(warningDiv);
+
+        // Get elements
+        const dialog = document.getElementById("confirmDialog");
+        const confirmBtn = document.getElementById("confirmBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+
+        // 1. When the "RESET ROUND" button is clicked, open the custom dialog
+        document.getElementById("btnReset").addEventListener("click", () => {
+          dialog.showModal(); // This makes it a proper modal dialog
+        });
+
+        // 2. Close if Cancel is clicked
+        cancelBtn.addEventListener("click", () => {
+          dialog.close();
+        });
+
+        // 3. Perform the reset if Confirm is clicked
+        confirmBtn.addEventListener("click", () => {
+          dialog.close();
+
+          // 1. Remove from completed rounds
+          let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
+          completed = completed.filter((r) => r !== roundNum.toString());
+          CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
+
+          // 2. Clear all TEMPORARY form data for THIS venue/round
+          CacheManager.clear(roundKeyPrefix);
+
+          navDestUrl(roundNum);
+        });
+      }
+
       // PROGRESS BAR
       function updateProgressBar() {
         const form = document.getElementById("trivia-form");
@@ -877,7 +983,7 @@
 
         if (inputs.length === 0) return;
         console.log(
-          `Found ${inputs.length} visible inputs for progress calculation.`,
+          `Progress: Found ${inputs.length} visible inputs for progress calculation`,
         );
 
         const filledCount = inputs.filter(
@@ -898,96 +1004,24 @@
         }
       }
 
+      function setDoubleRound(selectValue) {
+        const match = selectValue.match(/(\d+)/);
+        const roundNumber = match ? match[0] : null;
+
+        if (roundNumber) {
+          CacheManager.set(venueKeys.DOUBLE_ROUND, roundNumber);
+          console.log("Bonus round saved:", roundNumber);
+        }
+      }
+
+      function getDoubleRound() {
+        return CacheManager.get(venueKeys.DOUBLE_ROUND);
+      }
+
       (function () {
-        function setDoubleRound(selectValue) {
-          const match = selectValue.match(/(\d+)/);
-          const roundNumber = match ? match[0] : null;
-
-          if (roundNumber) {
-            CacheManager.set(venueKeys.DOUBLE_ROUND, roundNumber);
-            console.log("Bonus round saved:", roundNumber);
-          }
-        }
-
-        function getDoubleRound() {
-          return CacheManager.get(venueKeys.DOUBLE_ROUND);
-        }
-
         const form = document.getElementById("trivia-form");
         const teamDisplay = document.getElementById("team-name-display");
         const badgeDoubleRound = document.getElementById("badge-double");
-
-        function getCleanRoundsArray() {
-          const raw = appData.availableRounds || [];
-          if (Array.isArray(raw)) {
-            return raw.sort((a, b) => a - b);
-          }
-          return raw
-            .split(",")
-            .map((n) => parseInt(n.trim(), 10))
-            .filter((n) => !isNaN(n))
-            .sort((a, b) => a - b);
-        }
-
-        // Completed warning
-        function showCompletedWarning(roundNum) {
-          const content = document.getElementById("main-content");
-
-          // Create a unique container so we don't duplicate it
-          const warningDiv = document.createElement("div");
-          warningDiv.className = "alert-banner alert-banner--warning";
-
-          warningDiv.innerHTML = `
-          <strong>You have already submitted answers for Round ${roundNum}!</strong>
-          <br/>
-          If this is not correct please reset the round.
-          <br/><br/>
-          <button id="btnReset" style="padding: 10px 20px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 5px; cursor: pointer;">
-            RESET ROUND
-          </button>
-          <dialog id="confirmDialog" style="border: none; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-            <p>Are you sure you want to reset this round?<br/>All current answers will be cleared.</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-              <button id="cancelBtn" style="padding: 8px 16px; cursor: pointer;">Cancel</button>
-              <button id="confirmBtn" style="padding: 8px 16px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 4px; cursor: pointer;">Yes, Reset</button>
-            </div>
-          </dialog>
-          <br/><br/>
-          Or select the current round below.
-        `;
-
-          content.prepend(warningDiv);
-
-          // Get elements
-          const dialog = document.getElementById("confirmDialog");
-          const confirmBtn = document.getElementById("confirmBtn");
-          const cancelBtn = document.getElementById("cancelBtn");
-
-          // 1. When the "RESET ROUND" button is clicked, open the custom dialog
-          document.getElementById("btnReset").addEventListener("click", () => {
-            dialog.showModal(); // This makes it a proper modal dialog
-          });
-
-          // 2. Close if Cancel is clicked
-          cancelBtn.addEventListener("click", () => {
-            dialog.close();
-          });
-
-          // 3. Perform the reset if Confirm is clicked
-          confirmBtn.addEventListener("click", () => {
-            dialog.close();
-
-            // 1. Remove from completed rounds
-            let completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
-            completed = completed.filter((r) => r !== roundNum.toString());
-            CacheManager.set(venueKeys.COMPLETED_ROUNDS, completed);
-
-            // 2. Clear all TEMPORARY form data for THIS venue/round
-            CacheManager.clear(roundKeyPrefix);
-
-            navDestUrl(roundNum);
-          });
-        }
 
         // LOAD INITIAL GAME STATE
         window.addEventListener("load", () => {
@@ -1030,39 +1064,6 @@
             }
           }
 
-          const completed = CacheManager.get(venueKeys.COMPLETED_ROUNDS, []);
-          const rList = getCleanRoundsArray();
-
-          rList.forEach((rNum) => {
-            const dot = document.getElementById("dot-" + rNum);
-            const pill = document.getElementById("pill-" + rNum);
-
-            if (completed.includes(rNum.toString())) {
-              // Check if the user is currently ON this round
-              if (rNum === currentRound) {
-                //&& currentRound !== 0
-                showCompletedWarning(rNum);
-
-                const form = document.getElementById("trivia-form");
-                // HIDE THE FORM
-                console.log("Hiding form for completed round:", rNum);
-                if (form) {
-                  toggleVisibility(form, false);
-                }
-              }
-
-              if (dot) dot.classList.add("completed");
-              if (pill) {
-                pill.style.opacity = "0.5";
-                pill.classList.add("completed");
-              }
-            } else if (rNum === currentRound) {
-              if (dot) dot.classList.add("current");
-            }
-          });
-
-          updateDuplicateStates();
-          updateProgressBar();
         });
 
         console.log("Setting up form listeners...");
@@ -1143,6 +1144,8 @@
         // Helper: The logic that actually fires the request
         function proceedWithSubmission() {
           console.log("Submitting...");
+          toggleLoading(true, 60000);
+
           const submitButton = document.getElementById("submit-answers-button");
           submitButton.textContent = "SUBMITTING...";
           submitButton.disabled = true;
@@ -1248,6 +1251,9 @@
               );
               submitButton.textContent = "SUBMIT ANSWERS";
               submitButton.disabled = false;
+            })
+            .finally(() => {
+              //toggleLoading(false);
             });
 
           console.log("Submitted");
@@ -1266,7 +1272,7 @@
         }
 
         function showRoundSummary(html) {
-          toggleLoading(true, 1000);
+          //toggleLoading(true, 1000);
           console.log("Show Round Summary");
           toggleVisibility(form, false);
 
