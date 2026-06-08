@@ -558,6 +558,7 @@
 
       async function getFormData() {
         try {
+          console.log("Fetching form data from Apps Script...");
           const venueId = vId;
           const round = currentRound;
 
@@ -714,6 +715,7 @@
         if (show) {
           console.log("Show Loading");
           overlay.classList.remove("hide");
+          overlay.classList.remove("hidden");
 
           // Auto-hide after specified duration
           setTimeout(() => {
