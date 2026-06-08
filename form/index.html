@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base target="_top" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
+    <link rel="icon" sizes="512x512" href="icons/icon-512.png" type="image/png" > 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PLT">
+  </head>
+
+  <body>
+    <script src="./form.js"></script>
+
+    <!-- NEW: Loading Overlay placed at the very top -->
+    <div id="loading-overlay" class="loading-overlay">
+      <img id="loading-logo" class="loading-logo" />
+    </div>
+
+    <div class="container">
+      <!-- STICKY TOP SECTION (Venue + Round Title) -->
+
+      <div class="header">
+        <img id="header-logo" class="header-logo" />
+        <h1 id="venue-name" class="venue-name"></h1>
+      </div>
+
+      <div class="sticky-header-bar">
+        <div id="team-name-display" class="team-name-display"></div>
+        <div id="round-title-container" class="round-title-container">
+          <span id="round-title" class="round-title-label"></span>
+          <span id="badge-double" class="badge-double">2x Points</span>
+        </div>
+      </div>
+
+      <div id="accessibility-bar" class="accessibility-toolbar">
+        <label for="fontSizeSelector">Font Size:</label>
+        <select
+          id="fontSizeSelector"
+          class="accessibility-select"
+          onchange="updateFontSize(this.value)"
+        >
+          <option value="size-small">Small</option>
+          <option value="size-normal">Normal</option>
+          <option value="size-large">Large</option>
+          <option value="size-larger">Larger</option>
+          <option value="size-largest">Largest</option>
+        </select>
+      </div>
+
+      <!-- PROGRESS TRACKER START -->
+
+      <div id="progress-tracker" class="progress-tracker"></div>
+
+      <!-- PROGRESS TRACKER END -->
+
+      <div id="main-content" class="main-content" role="main">
+        <div
+          id="venue-not-found"
+          class="alert-banner alert-banner--error hidden"
+          role="alert"
+        >
+          <strong>Venue Not Found!</strong><br />
+          Please rescan your QR code or ask for assistance.
+        </div>
+
+        <div id="venue-selection" class="venue-selection hidden">
+          <p class="venue-selection-intro">
+            Search or select your venue to join the game:
+          </p>
+          <label for="searchBox">Search venues:</label>
+          <input
+            type="text"
+            id="searchBox"
+            onkeyup="filterVenues()"
+            placeholder="Type to filter venues..."
+            aria-label="Search venues"
+          />
+          <label for="venue-list">Select your venue:</label>
+          <select
+            id="venue-list"
+            class="venue-list"
+            multiple
+            onchange="handleVenueSelection(this)"
+            size="10"
+            aria-label="Venue list"
+          ></select>
+          <button
+            onclick="joinGame()"
+            class="button button--primary button--block button--spaced"
+          >
+            JOIN GAME
+          </button>
+        </div>
+
+        <div id="round-summary" class="round-summary hidden">
+          <div
+            id="summary-panel"
+            class="summary-panel"
+            role="region"
+            aria-label="Submission summary"
+          ></div>
+          <button id="btnContinue" class="button button--primary">
+            CONTINUE TO NEXT ROUND
+          </button>
+        </div>
+
+        <div
+          id="round-not-found"
+          class="alert-banner alert-banner--error hidden"
+          role="alert"
+        >
+          <strong>Round Not Found!</strong><br />
+          Please navigate to current round at the bottom.<br />
+          If the game is over, you can return to the landing page.
+        </div>
+
+        <form
+          id="trivia-form"
+          class="trivia-form hidden"
+          role="form"
+          aria-label="Trivia questions form"
+        >
+          <div
+            id="round-description"
+            class="round-description hidden"
+            role="complementary"
+            aria-label="Round description"
+          ></div>
+          <div id="questionsContainer"></div>
+          <div
+            id="form-progress"
+            class="form-progress hidden"
+            role="progressbar"
+            aria-label="Form completion progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div id="progress-bar" class="progress-bar">
+              <div id="progress-bar__fill" class="progress-bar__fill"></div>
+              <div
+                id="progress-bar__label"
+                class="progress-bar__label"
+                aria-live="polite"
+              ></div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button
+              id="submit-answers-button"
+              type="submit"
+              class="button button--primary"
+            >
+              SUBMIT ANSWERS
+            </button>
+          </div>
+        </form>
+
+        <dialog id="submit-confirm-dialog" class="dialog">
+          <p class="dialog__text">
+            You have unanswered questions.<br />Are you sure you want to submit?
+          </p>
+          <div class="dialog__actions">
+            <button id="cancel-submit-button" class="button button--secondary">
+              Go Back
+            </button>
+            <button id="confirm-submit-button" class="button button--danger">
+              Submit Anyway
+            </button>
+          </div>
+        </dialog>
+
+        <!-- FOOTER NAV -->
+        <div class="footer" role="contentinfo">
+          <div
+            id="round-selection-prompt"
+            class="round-selection-prompt hidden"
+            role="region"
+            aria-label="Round navigation instructions"
+          >
+            Not on the correct round?<br />Select the current round or Register
+          </div>
+          <div
+            id="round-navigation"
+            class="nav-tabs"
+            role="tablist"
+            aria-label="Round selection navigation"
+          ></div>
+          <div class="footer-links">
+            <a
+              id="standardFormLink"
+              href="#"
+              target="_blank"
+              class="footer-link hidden"
+              aria-label="Use standard Google Form if having trouble"
+            >
+              Trouble? Use standard Google Form
+            </a>
+            <a
+              href="https://privatelabeltrivia.com"
+              class="footer-credit"
+              aria-label="Powered By Private Label Trivia"
+            >
+              Powered By PLT
+            </a>
+            <div id="app-version" class="app-version-display"></div>
+          </div>
+        </div>
+        <!-- ENDS CONTENT -->
+      </div>
+      <!-- ENDS FOOTER -->
+    </div>
+    <!-- END CONTAINER -->
+
+    <!-- Branded Success Overlay -->
+    <div id="success-overlay" class="success-overlay hidden">
+      <div class="success-panel">
+        <img id="success-logo" class="success-logo" />
+        <h2 id="success-venue-name" class="success-venue-title"></h2>
+        <div class="success-icon">🎉</div>
+        <h1 class="success-title">Thanks for playing!</h1>
+        <div id="confirmation-text" class="success-text"></div>
+      </div>
+    </div>
+  </body>
+</html>
