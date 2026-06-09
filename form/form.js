@@ -231,7 +231,7 @@ function renderQuestions(data) {
         const emailBlock = document.createElement("div");
         emailBlock.className = "q-block";
         emailBlock.innerHTML = `
-          <label for="userEmail" class="q-title">EMAIL ADDRESS <span class="required-asterisk">*</span></label>
+          <label for="userEmail" class="q-title">EMAIL ADDRESS<span class="required-asterisk">*</span></label>
           <input type="email" name="email" id="userEmail" placeholder="your@email.com" required>
         `;
         container.appendChild(emailBlock);
@@ -252,7 +252,7 @@ function renderQuestions(data) {
         qBlock.className = "q-block";
 
         let label = `<label for="q_${q.id}" class="q-title">${q.label}`;
-        if (q.required) label += ' <span class="required-asterisk">*</span>';
+        if (q.required) label += '<span class="required-asterisk">*</span>';
         label += "</label>";
 
         let description = "";
@@ -263,13 +263,13 @@ function renderQuestions(data) {
         let input = "";
         if (q.type === "select" || (q.options && q.options.length > 0)) {
             input = `<select name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""}>
-            <option value="" selected>Choose...</option>`;
+            <option value="" selected>${q.placeholder || "Choose..."}</option>`;
             q.options.forEach((opt) => {
                 input += `<option value="${opt}" data-label="${opt}">${opt}</option>`;
             });
             input += "</select>";
         } else {
-            input = `<input type="text" name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} placeholder="Type answer here...">`;
+            input = `<input type="${q.type || "text"}" name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} placeholder="${q.placeholder || "Type answer here..."}">`;
         }
 
         qBlock.innerHTML = label + description + input;
