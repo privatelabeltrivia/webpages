@@ -1,3 +1,5 @@
+import { insertRegistrationSubmission, insertScoringRoundSubmission } from './supabase.js';
+
 // Configuration Constants
 const CONFIG = {
     API_ENDPOINT:
@@ -1021,7 +1023,7 @@ function getDoubleRound() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
-        })
+            })
             .then(() => {
                 finalizeSubmission();
             })
@@ -1036,6 +1038,18 @@ function getDoubleRound() {
             .finally(() => {
                 toggleLoading(false);
             });
+
+            try {
+                if (currentRound === 0) {
+                    insertRegistrationSubmission(payload);
+                } else {
+                    insertScoringRoundSubmission(payload);
+                }
+                //finalizeSubmission();
+            } catch (err) {
+                console.error(err);
+                showError("Submission failed.");
+            }
 
         console.log("Submitted");
     }
