@@ -5,6 +5,10 @@ import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
 const supabaseUrl = SUPABASE_URL; 
 const supabaseKey = SUPABASE_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw new Error("Missing Supabase configuration!");
+}
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Add this to supabase.js
