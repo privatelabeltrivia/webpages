@@ -351,11 +351,13 @@ async function getFormData() {
         const url = new URL(CONFIG.API_ENDPOINT);
         url.searchParams.append("venueId", venueId);
         url.searchParams.append("round", round);
+        url.searchParams.append("action","template");
 
         const response = await fetch(url, {
             method: "GET",
             mode: "cors",
         });
+        console.log("Raw response from Apps Script:", response);
 
         if (!response.ok) {
             throw new Error(`API returned status ${response.status}`);
