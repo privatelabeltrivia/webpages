@@ -1,8 +1,10 @@
 // supabase.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { SUPABASE_URL, SUPABASE_KEY } from './config.js';
 
-const supabaseUrl = '';
-const supabaseKey = ''
+const supabaseUrl = SUPABASE_URL; 
+const supabaseKey = SUPABASE_KEY;
+
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Add this to supabase.js
