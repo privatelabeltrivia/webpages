@@ -1,0 +1,54 @@
+/* Layout & Tabs */
+.tab-button {
+    padding: 1rem;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-active {
+    border-bottom-color: #2563eb;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+/* Grid & Tables */
+.trivia-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.trivia-table th, .trivia-table td {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.trivia-table th {
+    background-color: #f9fafb;
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    width: 24rem;
+}
+
+.input-field {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}

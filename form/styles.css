@@ -1,5 +1,5 @@
 :root {
-  --plt-color-primary: #1a73e8;
+  --plt-color-primary: #3C4043;
   --plt-color-text-main: #333;
   --plt-color-text-primary: #444;
   --plt-color-text-secondary: #666;
@@ -266,6 +266,10 @@ select {
   transition: border-color 0.2s;
 }
 
+select.has-value {
+  color: var(--plt-color-gray-med);
+}
+
 .q-block {
   margin-top: 15px;
   margin-bottom: 10px;
@@ -377,6 +381,52 @@ button[type="button"] {
 .venue-list:focus {
   outline: none;
   border-color: var(--plt-color-primary);
+}
+
+#venue-history-container {
+  padding: 20px;
+  text-align: center;
+  background: white;
+  border-radius: 12px;
+  margin: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#venue-history-container h3 {
+  color: var(--plt-color-text-main);
+  margin-bottom: 20px;
+}
+
+/* The list of buttons */
+#venue-history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+  justify-content: center;
+}
+
+/* Individual Venue Button Styling */
+#venue-history-list button {
+  background-color: var(--plt-color-primary);
+  color: white;
+  border: none;
+  padding: 15px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  font-size: 14px;
+  border: 3px solid var(--plt-color-primary);
+}
+
+#venue-history-list button:hover {
+  background-color: white;
+  color: var(--plt-color-primary); /* Slightly darker primary */
+  border: 3px solid var(--plt-color-border-med);
+}
+
+#venue-history-list button:active {
+  transform: translateY(0);
 }
 
 .nav-tabs {

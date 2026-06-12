@@ -20,14 +20,14 @@
 
     <!-- NEW: Loading Overlay placed at the very top -->
     <div id="loading-overlay" class="loading-overlay">
-      <img id="loading-logo" class="loading-logo" />
+      <img id="loading-logo" class="loading-logo" src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4X5JNoQ6kkAAo5emgSe-dPzXjC9_nwMQ0NO1LiKBrlbGNW80fRSQPcRuP4im8MIRAEvmq1LTMccxa2TpHFKKRNFdw8dHiBfXAJhKvOYC9D5NMCa-SdPAERogiKjuLs5asKtil_Q=s680-w680-h510-rw"/>
     </div>
 
     <div class="container">
       <!-- STICKY TOP SECTION (Venue + Round Title) -->
 
       <div class="header">
-        <img id="header-logo" class="header-logo" />
+        <img id="header-logo" class="header-logo" src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4X5JNoQ6kkAAo5emgSe-dPzXjC9_nwMQ0NO1LiKBrlbGNW80fRSQPcRuP4im8MIRAEvmq1LTMccxa2TpHFKKRNFdw8dHiBfXAJhKvOYC9D5NMCa-SdPAERogiKjuLs5asKtil_Q=s680-w680-h510-rw"/>
         <h1 id="venue-name" class="venue-name"></h1>
       </div>
 
@@ -54,11 +54,12 @@
         </select>
       </div>
 
-      <!-- PROGRESS TRACKER START -->
+      <div id="venue-history-container" class="venue-history-container hidden">
+        <h3>Welcome back! Which venue are you at?</h3>
+        <div id="venue-history-list"></div>
+    </div>
 
       <div id="progress-tracker" class="progress-tracker"></div>
-
-      <!-- PROGRESS TRACKER END -->
 
       <div id="main-content" class="main-content" role="main">
         <div
@@ -232,6 +233,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="supabase.js"></script>
     <script type="module" src="form.js"></script>
-    <script type="module" src="config.js"></script>
   </body>
 </html>

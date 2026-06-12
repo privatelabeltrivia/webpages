@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div x-data="triviaApp()" class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">Trivia Dashboard: <span x-text="eventId"></span></h1>
+
+        <div class="flex border-b mb-6">
+            <template x-for="r in [1, 2, 3, 4, 5]" :key="r">
+                <button @click="activeTab = r; fetchData()" 
+                        :class="activeTab === r ? 'border-b-2 border-blue-600 font-bold' : ''" 
+                        class="px-4 py-2" x-text="'Round ' + r"></button>
+            </template>
+            <button @click="activeTab = 'summary'" class="px-4 py-2">Summary</button>
+        </div>
+
+        <div x-show="activeTab !== 'summary'">
+            <table class="w-full text-left border">
+                <thead class="bg-gray-200">
+                    <tr><th class="p-2">Q#</th><th class="p-2">Correct Answer</th><th class="p-2">Team Submission</th><th class="p-2">Action</th></tr>
+                </thead>
+                <tbody>
+                    <template x-for="item in submissions" :key="item.id">
+                        <tr class="border-t">
+                            <td class="p-2" x-text="item.questionid"></td>
+                            <td class="p-2 font-mono text-green-700" x-text="getCorrect(item.questionid)"></td>
+                            <td class="p-2" x-text="item.submitted_answer"></td>
+                            <td class="p-2"><button @click="editItem = item; showModal = true" class="text-blue-500 underline">Correct</button></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <div x-show="activeTab === 'summary'">
+            <h2 class="text-xl font-bold mb-4">Leaderboard</h2>
+            <ul>
+                <template x-for="team in leaderboard" :key="team.name">
+                    <li class="py-2 border-b flex justify-between">
+                        <span x-text="team.name"></span>
+                        <span x-text="team.score + ' pts'" class="font-bold"></span>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
+        <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white p-6 rounded w-96">
+                <h3 class="mb-4">Correct Spelling Error</h3>
+                <input x-model="editItem.submitted_answer" class="border p-2 w-full mb-4">
+                <button @click="saveCorrection()" class="bg-blue-600 text-white px-4 py-2">Save</button>
+                <button @click="showModal = false" class="ml-2">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { SUPABASE_URL, SUPABASE_KEY } from "../supabase/config.js"; 
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function triviaApp() {
+            return {
+                eventId: new URLSearchParams(window.location.search).get('event') || '1',
+                activeTab: 1,
+                submissions: [],
+                correctAnswers: [],
+                leaderboard: [],
+                showModal: false,
+                editItem: {},
+
+                async init() {
+                    await this.fetchData();
+                    // Realtime setup
+                    supabase.channel('public:RoundData').on('postgres_changes', { event: '*', schema: 'public', table: 'RoundData' }, () => this.fetchData()).subscribe();
+                },
+
+                async fetchData() {
+                    const { data: subs } = await supabase.from('RoundData').select('*').eq('EventId', this.eventId).eq('RoundNum', this.activeTab);
+                    const { data: corr } = await supabase.from('Answers').select('*').eq('EventId', this.eventId).eq('RoundNum', this.activeTab);
+                    this.submissions = subs;
+                    this.correctAnswers = corr;
+                    
+                    if (this.activeTab === 'summary') this.calculateScores();
+                },
+
+                getCorrect(qid) {
+                    return this.correctAnswers.find(c => c.questionid === qid)?.answer_text || 'Pending';
+                },
+
+                async saveCorrection() {
+                    await supabase.from('RoundData').update({ submitted_answer: this.editItem.submitted_answer }).eq('id', this.editItem.id);
+                    this.showModal = false;
+                    this.fetchData();
+                },
+
+                calculateScores() {
+                    // Simple reduce logic or call a pre-calculated Supabase View
+                    this.leaderboard = [{name: 'Example Team', score: 10}]; 
+                }
+            }
+        }
+    </script>
+</body>
+</html>
