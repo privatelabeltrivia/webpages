@@ -13,6 +13,8 @@ const CONFIG = {
   CACHE_EXPIRY_MS: 6 * 60 * 60 * 1000,
 };
 
+const defaultLogoSrc = "../icons/img-default.png";
+
 // Storage Key Generator
 const STORAGE_KEYS = {
   SYSTEM: {
@@ -137,15 +139,16 @@ function renderPage(data) {
   if (!data.roundTitle) toggleVisibility(roundTitleContainer, false);
 
   console.log("3. Set Images");
-  CacheManager.set(venueKeys.LOGOSRC, data.logoSrc || data.logoSrc || "");
+  const logoSrc = data.logoSrc || data.logoSrc || defaultLogoSrc || "";
+  CacheManager.set(venueKeys.LOGOSRC, logoSrc);
   CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
 
   const headerLogo = document.getElementById("header-logo");
-  if (data.logoSrc) headerLogo.src = data.logoSrc || data.logoUrl || "";
+  if (data.logoSrc) headerLogo.src = logoSrc;
   const loadingLogo = document.getElementById("loading-logo");
-  if (data.logoSrc) loadingLogo.src = data.logoSrc || data.logoSrc || "";
+  if (data.logoSrc) loadingLogo.src = logoSrc;
   const successLogo = document.getElementById("success-logo");
-  if (data.logoSrc) successLogo.src = data.logoSrc || data.logoSrc || "";
+  if (data.logoSrc) successLogo.src = logoSrc;
 
   console.log("4. Populate Venue List");
   if (data.allVenues && Array.isArray(data.allVenues)) {
@@ -531,13 +534,12 @@ function toggleLoading(show, duration = 60000, callback = null) {
     "--plt-color-primary",
     primaryColor,
   );
-  const logoSrc = CacheManager.get(venueKeys.LOGOSRC);
+  const logoSrc = CacheManager.get(venueKeys.LOGOSRC) || defaultLogoSrc;
   const loadingLogo = document.getElementById("loading-logo");
   loadingLogo.alt = "Loading...";
   //if (!loadingLogo.src)
-  setTimeout(() => {
-    if (logoSrc) loadingLogo.src = logoSrc;
-  }, 1000);
+  loadingLogo.src = logoSrc;
+
   const overlay = document.getElementById("loading-overlay");
   if (!overlay) return;
 
