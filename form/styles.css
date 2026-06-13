@@ -1,8 +1,9 @@
 :root {
   --plt-color-primary: #3C4043;
-  --plt-color-text-main: #333;
-  --plt-color-text-primary: #444;
-  --plt-color-text-secondary: #666;
+  --plt-color-secondary: #FFFFFF;
+  --plt-color-text-main: var(--plt-color-gray-very-dark);
+  --plt-color-text-primary: var(--plt-color-gray-dark);
+  --plt-color-text-secondary: var(--plt-color-gray-med);
   --plt-color-text-hint: #999;
   --plt-color-border-light: #eee;
   --plt-color-border-med: #ddd;
@@ -12,18 +13,47 @@
   --plt-color-warning-bg: #fff8e1;
   --plt-color-warning-border: #ffe082;
   --plt-color-warning-text: #856404;
-  --background-body: #f0f2f5;
-  --plt-color-white-pure: #fff;
+
+  --plt-color-background-default: var(--plt-color-white-pure);
+  --plt-color-background-body: #f0f2f5;
+  --plt-color-background-container: var(--plt-color-white-pure);
+  --plt-color-background-footer: var(--plt-color-white-pure);
+  --plt-color-background-overlay: rgba(255, 255, 255, 0.98);
+
+
   --plt-color-section-bg: #f9f9f9;
   --plt-color-disabled: #f0f0f0;
   --plt-color-soft-dividers: #ddd;
+
   --plt-color-gray-very-light: #fafafa;
   --plt-color-gray-med-light: #999;
   --plt-color-gray-light: #eee;
   --plt-color-gray-med: #666;
   --plt-color-gray-dark: #444;
   --plt-color-gray-very-dark: #333;
+  --plt-color-white-almost: #f0f0f0;
+  --plt-color-white-pure: #fff;
+  --plt-color-black-almost: #121212;
+  --plt-color-black-pure: #000;
+
   --font-size-base: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --plt-color-background-default: var(--plt-color-gray-dark);
+    --plt-color-background-body: var(--plt-color-black-almost);
+    --plt-color-background-container: var(--plt-color-gray-dark);
+    --plt-color-background-footer: var(--plt-color-gray-med);
+    --plt-color-background-overlay: var(--plt-color-gray-dark);
+
+    --plt-color-text-main: var(--plt-color-white-almost);
+    --plt-color-text-primary: var(--plt-color-gray-very-light);
+    --plt-color-text-secondary: var(--plt-color-gray-light);
+    --plt-color-text-hint: var(--plt-color-gray-light);
+
+    --plt-color-disabled: #f0f0f0;
+  }
 }
 
 .size-small {
@@ -59,7 +89,7 @@ body {
   max-width: 600px;
   display: flex;
   justify-content: center;
-  background: var(--background-body);
+  background: var(--plt-color-background-body);
   color: var(--plt-color-text-main);
 }
 
@@ -68,7 +98,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--plt-color-white-pure);
+  background: var(--plt-color-background-container);
   margin: 0 auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -76,7 +106,7 @@ body {
 
 .header {
   background: var(--plt-color-primary);
-  color: var(--plt-color-white-pure);
+  color: var(--plt-color-secondary);
   text-align: center;
   text-transform: uppercase;
   padding: 15px;
@@ -101,7 +131,7 @@ body {
 .accessibility-toolbar,
 .footer {
   width: 100%;
-  background: var(--plt-color-white-pure);
+  background: var(--plt-color-background-footer);
 }
 
 .sticky-header-bar {
@@ -114,7 +144,8 @@ body {
 .team-name-display {
   text-align: center;
   font-weight: 700;
-  color: var(--plt-color-gray-dark);
+  color: var(--plt-color-text-primary);
+  background: var(--plt-color-background-default);
   font-size: 0.85em;
   text-transform: uppercase;
   padding-top: 5px;
@@ -126,10 +157,10 @@ body {
   text-align: center;
   font-size: 1.3em;
   font-weight: 800;
-  color: var(--plt-color-primary);
-  background: var(--plt-color-white-pure);
+  color: var(--plt-color-text-primary);
+  background: var(--plt-color-background-default);
   text-transform: uppercase;
-  border-bottom: 2px solid var(--plt-color-gray-light);
+  border-bottom: 2px solid var(--plt-color-border-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,7 +169,7 @@ body {
 .round-title-label {
   max-width: 50%;
   font-size: 0.9em;
-  color: var(--plt-color-gray-med);
+  color: var(--plt-color-text-secondary);
   margin-right: 10px;
   display: inline-flex;
 }
@@ -184,12 +215,11 @@ body {
   gap: 10px;
   font-family: sans-serif;
   font-size: 0.9em;
-  color: #4a5568;
+  color: var(--plt-color-text-hint);
   padding: 10px 20px;
 }
 
 .accessibility-select {
-  background-color: var(--plt-color-white-pure);
   border: 1px solid #d1d9e0;
   border-radius: 6px;
   padding: 6px 10px;
@@ -211,10 +241,10 @@ body {
 
 .round-description {
   padding: 20px;
-  color: var(--plt-color-gray-med);
+  color: var(--plt-color-text-secondary);
   font-size: 0.95em;
   line-height: 1.5;
-  background: var(--plt-color-gray-very-light);
+  background: var(--plt-color-background-default);
   white-space: pre-line;
   border-bottom: 1px solid var(--plt-color-gray-light);
   margin-bottom: 10px;
@@ -239,12 +269,12 @@ body {
   font-size: 1em;
   display: block;
   margin-bottom: 10px;
-  color: var(--plt-color-gray-very-dark);
+  color: var(--plt-color-text-primary);
 }
 
 .q-description {
   font-size: 0.85em;
-  color: var(--plt-color-gray-med);
+  color: var(--plt-color-text-secondary);
   margin: -4px 0 10px;
 }
 
@@ -262,7 +292,8 @@ select {
   border: 1px solid var(--plt-color-border-med);
   border-radius: 8px;
   font-size: 1em;
-  background-color: var(--plt-color-white-pure);
+  background-color: var(--plt-color-background-default);
+  color:var(--plt-color-text-main);
   transition: border-color 0.2s;
 }
 
@@ -295,12 +326,18 @@ select.has-value {
 input:focus,
 select:focus {
   outline: none;
+  background-color: var(--plt-color-background-default);
   border-color: var(--plt-color-primary);
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
 }
 
 select:hover {
   border-color: var(--plt-color-primary);
+}
+
+select option {
+  background-color: var(--plt-color-background-default);
+  color: var(--plt-color-text-main);
 }
 
 button,
@@ -481,14 +518,14 @@ button[type="button"] {
 
 .round-status-dot.completed {
   background: var(--plt-color-primary);
-  color: var(--plt-color-white-pure);
+  color: var(--plt-color-secondary);
   border-color: var(--plt-color-primary);
 }
 
 .round-status-dot.current {
   border-color: var(--plt-color-primary);
   color: var(--plt-color-primary);
-  background: var(--plt-color-white-pure);
+  background: var(--plt-color-secondary);
 }
 
 .form-progress {
@@ -598,7 +635,7 @@ button[type="button"] {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--plt-color-background-overlay);
   z-index: 9999;
   display: flex;
   justify-content: center;

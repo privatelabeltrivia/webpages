@@ -29,6 +29,7 @@ const STORAGE_KEYS = {
     DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`,
     LOGOSRC: `plt_venue_${venueId}_logo_src`,
     PRIMARY_COLOR: `plt_venue_${venueId}_primary_color`,
+    SECONDARY_COLOR: `plt_venue_${venueId}_secondary_color`
   }),
   getRoundPrefix: (venueId, roundNum) => `plt_round_${venueId}_${roundNum}_`,
 };
@@ -129,7 +130,7 @@ function renderPage(data) {
   document.getElementById("success-venue-name").textContent =
     data.venueName || "";
 
-  document.title = `${data.venueName || "Trivia Venue"} - Round ${data.roundNum}`;
+  document.title = `${data.venueName || "Trivia Venue"} - ${(data.roundNum === 0) ? "Registration" : "Round " + data.roundNum}`;
 
   document.getElementById("round-title").textContent = data.roundTitle || "";
   document.getElementById("app-version").textContent =
@@ -139,8 +140,9 @@ function renderPage(data) {
   if (!data.roundTitle) toggleVisibility(roundTitleContainer, false);
 
   console.log("3. Set Images");
-  const logoSrc = data.logoSrc || data.logoSrc || defaultLogoSrc || "";
+  const logoSrc = data.logoSrc || defaultLogoSrc || "";
   CacheManager.set(venueKeys.LOGOSRC, logoSrc);
+
   CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
 
   const headerLogo = document.getElementById("header-logo");
@@ -404,6 +406,7 @@ async function getFormData() {
       VenueHistory.addVenue(appData.venueId, appData.venueName);
       renderPage(appData);
     } else {
+         document.title = "Trivia Venue - Not Found"
       VenueHistory.cleanupVenues(appData.allVenues);
       const history = VenueHistory.getVenues();
       if (history.length > 0) {
@@ -502,6 +505,9 @@ function updateFontSize(className) {
 window.addEventListener("load", () => {
   toggleLoading(true, 60000);
 
+  toggleVisibility(document.getElementById("container"), true);
+  document.title = "Trivia Venue - Loading..."
+
   const savedSize = CacheManager.get(
     STORAGE_KEYS.SYSTEM.FONT_SIZE,
     "size-normal",
@@ -532,13 +538,14 @@ function toggleLoading(show, duration = 60000, callback = null) {
   const primaryColor = CacheManager.get(venueKeys.PRIMARY_COLOR);
   document.documentElement.style.setProperty(
     "--plt-color-primary",
-    primaryColor,
+    primaryColor
   );
   const logoSrc = CacheManager.get(venueKeys.LOGOSRC) || defaultLogoSrc;
   const loadingLogo = document.getElementById("loading-logo");
   loadingLogo.alt = "Loading...";
   //if (!loadingLogo.src)
   loadingLogo.src = logoSrc;
+  console.log("Loading Logo Source Set");
 
   const overlay = document.getElementById("loading-overlay");
   if (!overlay) return;
@@ -547,6 +554,7 @@ function toggleLoading(show, duration = 60000, callback = null) {
     console.log("Show Loading");
     overlay.classList.remove("hide");
     overlay.classList.remove("hidden");
+    console.log("Loading Logo Shown");
 
     // Auto-hide after specified duration
     setTimeout(() => {
