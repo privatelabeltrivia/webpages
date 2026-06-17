@@ -1,7 +1,7 @@
 {
   "name": "Private Label Trivia",
   "short_name": "PLT",
-  "start_url": "./index.html",
+  "start_url": "./form/index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
