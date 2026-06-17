@@ -501,6 +501,8 @@ function updateFontSize(className) {
   CacheManager.set(STORAGE_KEYS.SYSTEM.FONT_SIZE, className);
 }
 
+window.updateFontSize = updateFontSize;
+
 // On page load, apply the saved preference
 window.addEventListener("load", () => {
   toggleLoading(true, 60000);
