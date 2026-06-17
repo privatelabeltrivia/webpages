@@ -53,6 +53,8 @@
     --plt-color-text-hint: var(--plt-color-gray-light);
 
     --plt-color-disabled: #f0f0f0;
+
+  --font-size-base: 100%;
   }
 }
 
