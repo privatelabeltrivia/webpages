@@ -146,11 +146,11 @@ function renderPage(data) {
   CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
 
   const headerLogo = document.getElementById("header-logo");
-  if (data.logoSrc) headerLogo.src = logoSrc;
+  if (logoSrc) headerLogo.src = logoSrc;
   const loadingLogo = document.getElementById("loading-logo");
-  if (data.logoSrc) loadingLogo.src = logoSrc;
+  if (logoSrc) loadingLogo.src = logoSrc;
   const successLogo = document.getElementById("success-logo");
-  if (data.logoSrc) successLogo.src = logoSrc;
+  if (logoSrc) successLogo.src = logoSrc;
 
   console.log("4. Populate Venue List");
   if (data.allVenues && Array.isArray(data.allVenues)) {
