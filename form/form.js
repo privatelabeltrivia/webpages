@@ -406,11 +406,18 @@ async function getFormData() {
       VenueHistory.addVenue(appData.venueId, appData.venueName);
       renderPage(appData);
     } else {
-         document.title = "Trivia Venue - Not Found"
+      document.title = "Trivia Venue - Not Found"
+
+      const headerLogo = document.getElementById("header-logo");
+      headerLogo.src = defaultLogoSrc;
+
       VenueHistory.cleanupVenues(appData.allVenues);
+
       const history = VenueHistory.getVenues();
-      if (history.length > 0) {
+      if (history.length > 1) {
         renderVenueButtons(history);
+      } else if (history.length = 1) {
+        navDestUrl(history[0].id, 0);
       } else {
         showError(
           "Missing venue or round information in URL.  Please try rescanning QR code or consult with your host.",
@@ -503,6 +510,39 @@ function updateFontSize(className) {
 
 window.updateFontSize = updateFontSize;
 
+const toggleBtn = document.getElementById('theme-toggle');
+toggleBtn.addEventListener('click', () => {
+  setTheme(true)
+
+});
+
+// Add this to your initialization/load listener in form.js
+function initTheme() {
+  const savedTheme = localStorage.getItem('plt_dark_mode'); // 'enabled' or 'disabled'
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  // Logic: Use saved preference IF it exists, otherwise fallback to system
+  if (savedTheme === 'enabled' || (!savedTheme && systemPrefersDark)) {
+    document.documentElement.classList.add('dark-mode');
+    updateToggleUI(true); // Helper to set your switch/icon to 'dark' state
+  } else {
+    document.documentElement.classList.remove('dark-mode');
+    updateToggleUI(false);
+  }
+}
+
+function setTheme(darkMode) {
+  document.documentElement.classList.toggle('dark-mode');
+  const isDark = document.documentElement.classList.contains('dark-mode');
+  toggleBtn.textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+  localStorage.setItem('plt_dark_mode', isDark ? 'enabled' : 'disabled');
+  console.log(`Dark Mode = ${isDark ? 'Enabled' : 'Disabled'}`)
+}
+
+// Ensure you run this on startup
+window.addEventListener("load", initTheme);
+
+
 // On page load, apply the saved preference
 window.addEventListener("load", () => {
   toggleLoading(true, 60000);
@@ -582,7 +622,7 @@ function toggleSelectColor(selectElement) {
   }
 }
 
-function getDestUrl(roundNum) {
+function getDestUrl(venueId, roundNum) {
   const emailInput = document.getElementById("userEmail");
   const emailValue = emailInput ? emailInput.value : "";
   const emailStorage = CacheManager.get(STORAGE_KEYS.SYSTEM.EMAIL);
@@ -592,7 +632,6 @@ function getDestUrl(roundNum) {
     console.warn("User email not found. Proceeding without email.");
   }
 
-  const venueId = vId;
   const destUrl =
     window.location.pathname +
     "?venue=" +
@@ -605,14 +644,14 @@ function getDestUrl(roundNum) {
   return destUrl;
 }
 
-function navDestUrl(roundNum) {
+function navDestUrl(venueId, roundNum) {
   toggleLoading(true, 60000);
-  const destUrl = getDestUrl(roundNum);
+  const destUrl = getDestUrl(venueId, roundNum);
   window.top.location.href = destUrl;
 }
 
 function handleNavClick(targetRound) {
-  navDestUrl(targetRound);
+  navDestUrl(vId, targetRound);
 }
 
 function updateDuplicateStates() {
@@ -789,7 +828,7 @@ function showCompletedWarning(roundNum) {
     // 2. Clear all TEMPORARY form data for THIS venue/round
     CacheManager.clear(roundKeyPrefix);
 
-    navDestUrl(roundNum);
+    navDestUrl(vId, roundNum);
   });
 }
 
@@ -1204,7 +1243,7 @@ function getDoubleRound() {
       if (nextRound === 0) {
         CacheManager.clear(`plt_venue_${vId}_`);
       }
-      navDestUrl(nextRound);
+      navDestUrl(vId, nextRound);
     } else {
       // Final/invalid Round Detected
       if (currentRound === finalRound) {
