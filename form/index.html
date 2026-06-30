@@ -41,13 +41,11 @@
       </div>
 
       <div id="accessibility-bar" class="accessibility-toolbar">
-        <button id="theme-toggle" class="accessibility-select" aria-label="Toggle dark mode">
-          🌙 Dark Mode
-        </button>
+        <button id="theme-toggle" class="accessibility-input"></button>
         <label for="fontSizeSelector">Font Size:</label>
         <select
           id="fontSizeSelector"
-          class="accessibility-select"
+          class="accessibility-input"
           onchange="updateFontSize(this.value)"
         >
           <option value="size-small">Small</option>
@@ -58,12 +56,12 @@
         </select>
       </div>
 
+      <div id="progress-tracker" class="progress-tracker"></div>
+
       <div id="venue-history-container" class="venue-history-container hidden">
         <h3>Welcome back! Which venue are you at?</h3>
         <div id="venue-history-list"></div>
-    </div>
-
-      <div id="progress-tracker" class="progress-tracker"></div>
+      </div>
 
       <div id="main-content" class="main-content" role="main">
         <div
@@ -175,7 +173,7 @@
             <button id="cancel-submit-button" class="button button--secondary">
               Go Back
             </button>
-            <button id="confirm-submit-button" class="button button--danger">
+            <button id="confirm-submit-button" class="button button--confirm">
               Submit Anyway
             </button>
           </div>

@@ -7,6 +7,7 @@ import {
 const CONFIG = {
   API_ENDPOINT:
     "https://script.google.com/macros/s/AKfycbzSKsXsSkuCtLr3kC8OxIcFqdQdakD7Ux1_-07K7KSMYjt0DDCSyj2qX2h3OG1o4OU9/exec",
+  API_SUPABASE: "",
   LOADING_TIMEOUT: 60000,
   LOADING_DISPLAY_TIME: 2000,
   MAX_VENUE_LIST_HEIGHT: 20,
@@ -21,6 +22,7 @@ const STORAGE_KEYS = {
     EMAIL: "plt_system_email",
     FONT_SIZE: "plt_system_font_size",
     VISITED_VENUES: "plt_system_visited_venues",
+    THEME: "plt_system_theme",
   },
   getVenueKeys: (venueId) => ({
     TEAM_NAME: `plt_venue_${venueId}_team_name`,
@@ -29,7 +31,7 @@ const STORAGE_KEYS = {
     DOUBLE_ROUND: `plt_venue_${venueId}_bonus_round`,
     LOGOSRC: `plt_venue_${venueId}_logo_src`,
     PRIMARY_COLOR: `plt_venue_${venueId}_primary_color`,
-    SECONDARY_COLOR: `plt_venue_${venueId}_secondary_color`
+    SECONDARY_COLOR: `plt_venue_${venueId}_secondary_color`,
   }),
   getRoundPrefix: (venueId, roundNum) => `plt_round_${venueId}_${roundNum}_`,
 };
@@ -130,7 +132,7 @@ function renderPage(data) {
   document.getElementById("success-venue-name").textContent =
     data.venueName || "";
 
-  document.title = `${data.venueName || "Trivia Venue"} - ${(data.roundNum === 0) ? "Registration" : "Round " + data.roundNum}`;
+  document.title = `${data.venueName || "Trivia Venue"} - ${data.roundNum === 0 ? "Registration" : "Round " + data.roundNum}`;
 
   document.getElementById("round-title").textContent = data.roundTitle || "";
   document.getElementById("app-version").textContent =
@@ -295,18 +297,33 @@ function renderQuestions(data) {
 
     let input = "";
     if (q.type === "select" || (q.options && q.options.length > 0)) {
-      input = `<select name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""}>
+      input = `<select name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} class="q-input">
             <option value="" selected>${q.placeholder || "Choose..."}</option>`;
       q.options.forEach((opt) => {
         input += `<option value="${opt}" data-label="${opt}">${opt}</option>`;
       });
       input += "</select>";
     } else {
-      input = `<input type="${q.type || "text"}" name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} placeholder="${q.placeholder || "Type answer here..."}">`;
+      input = `<input type="${q.type || "text"}" name="${q.id}" id="q_${q.id}" ${q.required ? "required" : ""} ${q.maxlength ? 'maxLength="' + q.maxlength + '"' : ""} placeholder="${q.placeholder || "Type answer here..."}" class="q-input">`;
     }
 
-    qBlock.innerHTML = label + description + input;
+    let warning = "";
+    if (q.maxlength) {
+      warning = `<div id="warning_${q.id}" class="q-warning">Team name cannot exceed ${q.maxlength} characters.</div>`;
+    }
+
+    qBlock.innerHTML = label + description + input + warning;
     container.appendChild(qBlock);
+
+    if (q.maxlength) {
+      const field = qBlock.querySelector("input");
+      const warningEl = document.getElementById(`warning_${q.id}`);
+
+      field.addEventListener("input", () => {
+        warningEl.style.display =
+          field.value.length >= q.maxlength ? "block" : "none";
+      });
+    }
   });
 }
 
@@ -372,6 +389,13 @@ function restoreFormFromCache() {
     console.log(`Restoring ${field.name} from cache with key ${key}:`, cached);
     if (cached) field.value = cached;
 
+    if (field.maxLength) {
+      const warningEl = document.getElementById(`warning_${field.name}`);
+      if (warningEl)
+        warningEl.style.display =
+          field.value.length >= field.maxLength ? "block" : "none";
+    }
+
     if (select) toggleSelectColor(select);
   });
 
@@ -406,7 +430,7 @@ async function getFormData() {
       VenueHistory.addVenue(appData.venueId, appData.venueName);
       renderPage(appData);
     } else {
-      document.title = "Trivia Venue - Not Found"
+      document.title = "Trivia Venue - Not Found";
 
       const headerLogo = document.getElementById("header-logo");
       headerLogo.src = defaultLogoSrc;
@@ -416,7 +440,7 @@ async function getFormData() {
       const history = VenueHistory.getVenues();
       if (history.length > 1) {
         renderVenueButtons(history);
-      } else if (history.length = 1) {
+      } else if ((history.length = 1)) {
         navDestUrl(history[0].id, 0);
       } else {
         showError(
@@ -510,45 +534,55 @@ function updateFontSize(className) {
 
 window.updateFontSize = updateFontSize;
 
-const toggleBtn = document.getElementById('theme-toggle');
-toggleBtn.addEventListener('click', () => {
-  setTheme(true)
-
+const toggleBtn = document.getElementById("theme-toggle");
+toggleBtn.addEventListener("click", () => {
+  setTheme();
 });
 
 // Add this to your initialization/load listener in form.js
 function initTheme() {
-  const savedTheme = localStorage.getItem('plt_dark_mode'); // 'enabled' or 'disabled'
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+  const savedTheme = CacheManager.get(STORAGE_KEYS.SYSTEM.THEME);
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)",
+  ).matches;
+
   // Logic: Use saved preference IF it exists, otherwise fallback to system
-  if (savedTheme === 'enabled' || (!savedTheme && systemPrefersDark)) {
-    document.documentElement.classList.add('dark-mode');
-    updateToggleUI(true); // Helper to set your switch/icon to 'dark' state
+  if (!savedTheme) {
+    if (systemPrefersDark) {
+      setTheme("theme-dark");
+    } else {
+      setTheme("theme-light");
+    }
   } else {
-    document.documentElement.classList.remove('dark-mode');
-    updateToggleUI(false);
+    setTheme(savedTheme);
   }
 }
 
-function setTheme(darkMode) {
-  document.documentElement.classList.toggle('dark-mode');
-  const isDark = document.documentElement.classList.contains('dark-mode');
-  toggleBtn.textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
-  localStorage.setItem('plt_dark_mode', isDark ? 'enabled' : 'disabled');
-  console.log(`Dark Mode = ${isDark ? 'Enabled' : 'Disabled'}`)
+function setTheme(theme) {
+  const newTheme =
+    theme || CacheManager.get(STORAGE_KEYS.SYSTEM.THEME) === "theme-dark"
+      ? "theme-light"
+      : "theme-dark";
+  const wantDark = newTheme === "theme-dark";
+  document.documentElement.classList.toggle("theme-dark", wantDark);
+  const isDark = document.documentElement.classList.contains("theme-dark");
+  toggleBtn.textContent = isDark ? "🌙 Dark Mode" : "☀️ Light Mode";
+  CacheManager.set(
+    STORAGE_KEYS.SYSTEM.THEME,
+    isDark ? "theme-dark" : "theme-light",
+  );
+  console.log(`Theme = ${isDark ? "theme-dark" : "theme-light"}`);
 }
 
 // Ensure you run this on startup
 window.addEventListener("load", initTheme);
-
 
 // On page load, apply the saved preference
 window.addEventListener("load", () => {
   toggleLoading(true, 60000);
 
   toggleVisibility(document.getElementById("container"), true);
-  document.title = "Trivia Venue - Loading..."
+  document.title = "Trivia Venue - Loading...";
 
   const savedSize = CacheManager.get(
     STORAGE_KEYS.SYSTEM.FONT_SIZE,
@@ -580,7 +614,7 @@ function toggleLoading(show, duration = 60000, callback = null) {
   const primaryColor = CacheManager.get(venueKeys.PRIMARY_COLOR);
   document.documentElement.style.setProperty(
     "--plt-color-primary",
-    primaryColor
+    primaryColor,
   );
   const logoSrc = CacheManager.get(venueKeys.LOGOSRC) || defaultLogoSrc;
   const loadingLogo = document.getElementById("loading-logo");
@@ -698,24 +732,21 @@ function updateDuplicateStates() {
   // 4. Apply styles
   selects.forEach((select) => {
     const isDuplicated = select.value !== "" && valueCounts[select.value] > 1;
+    select.classList.toggle("isDuplicated", isDuplicated);
 
     Array.from(select.options).forEach((option) => {
       if (option.value === "") return;
 
-      const isTakenElsewhere =
-        (valueCounts[option.value] || 0) > 0 && select.value !== option.value;
+      const isSelected =
+        ((valueCounts[option.value] || 0) > 0 &&
+          select.value !== option.value) ||
+        ((valueCounts[option.value] || 0) > 1 && select.value === option.value);
 
-      option.style.color = isTakenElsewhere
-        ? "#ccc"
-        : "var(--plt-color-black-pure)";
-      option.style.backgroundColor = isTakenElsewhere ? "#f8f8f8" : "";
-      option.textContent = isTakenElsewhere
+      option.classList.toggle("isSelected", isSelected);
+      option.textContent = isSelected
         ? `${option.dataset.label} (Already choosen)`
         : option.dataset.label;
     });
-
-    select.style.backgroundColor = isDuplicated ? "#fffdf0" : "transparent";
-    //select.style.border = isDuplicated ? "2px solid #ffb3b3" : "1px solid";
   });
 }
 
@@ -750,10 +781,7 @@ function updateCompletedRoundPills() {
       }
 
       if (dot) dot.classList.add("completed");
-      if (pill) {
-        pill.style.opacity = "0.5";
-        pill.classList.add("completed");
-      }
+      if (pill) pill.classList.add("completed");
     } else if (rNum === currentRound) {
       if (dot) dot.classList.add("current");
     }
@@ -785,14 +813,14 @@ function showCompletedWarning(roundNum) {
           <br/>
           If this is not correct please reset the round.
           <br/><br/>
-          <button id="btnReset" style="padding: 10px 20px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 5px; cursor: pointer;">
+          <button id="btnReset" class="alert-banner--button-reset">
             RESET ROUND
           </button>
-          <dialog id="confirmDialog" style="border: none; border-radius: 8px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+          <dialog id="confirmDialog" class="alert-banner--dialog-confirm">
             <p>Are you sure you want to reset this round?<br/>All current answers will be cleared.</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-              <button id="cancelBtn" style="padding: 8px 16px; cursor: pointer;">Cancel</button>
-              <button id="confirmBtn" style="padding: 8px 16px; background: #856404; color: var(--plt-color-white-pure); border: none; border-radius: 4px; cursor: pointer;">Yes, Reset</button>
+            <div class="alert-banner--button-container">
+              <button id="cancelBtn" class="alert-banner--button-cancel">Cancel</button>
+              <button id="confirmBtn" class="alert-banner--button-confirm">Yes, Reset</button>
             </div>
           </dialog>
           <br/><br/>
@@ -1190,7 +1218,7 @@ function getDoubleRound() {
 
   function buildSummaryTable(formElement) {
     const table = document.createElement("table");
-    table.style.cssText = "width:100%; border-collapse:collapse;";
+    table.classList.add("summary-table");
 
     formElement.querySelectorAll(".q-block").forEach((block, index, array) => {
       const label = block
@@ -1201,20 +1229,12 @@ function getDoubleRound() {
 
       if (input && input.type !== "hidden") {
         const row = table.insertRow();
-        const isLast = index === array.length - 1;
-        row.style.borderBottom = isLast
-          ? "none"
-          : "1px solid var(--plt-color-border-med)";
 
         const labelCell = row.insertCell();
         labelCell.textContent = label;
-        labelCell.style.cssText =
-          "padding:10px 15px 10px 0; font-weight:bold; color:var(--plt-color-gray-med); font-size:0.9em; width:50%;";
 
         const valueCell = row.insertCell();
         valueCell.textContent = input.value;
-        valueCell.style.cssText =
-          "padding:10px 0; color:var(--plt-color-black-pure);";
       }
     });
 
