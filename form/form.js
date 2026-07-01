@@ -559,11 +559,14 @@ function initTheme() {
 }
 
 function setTheme(theme) {
+  console.log(`Requested Theme: ${theme}`);
   const newTheme =
-    theme || CacheManager.get(STORAGE_KEYS.SYSTEM.THEME) === "theme-dark"
+    theme || (CacheManager.get(STORAGE_KEYS.SYSTEM.THEME) === "theme-dark"
       ? "theme-light"
-      : "theme-dark";
+      : "theme-dark");
+  console.log(`New Theme: ${newTheme}`)
   const wantDark = newTheme === "theme-dark";
+  console.log(`Want Dark Theme: ${wantDark}`);
   document.documentElement.classList.toggle("theme-dark", wantDark);
   const isDark = document.documentElement.classList.contains("theme-dark");
   toggleBtn.textContent = isDark ? "🌙 Dark Mode" : "☀️ Light Mode";
