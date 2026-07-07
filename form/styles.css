@@ -23,6 +23,7 @@
   --plt-color-background-container: var(--plt-color-white-pure);
   --plt-color-background-footer: var(--plt-color-white-pure);
   --plt-color-background-overlay: rgba(255, 255, 255, 0.98);
+  --plt-colorbackground-section: #f9f9f9;
   --plt-color-background-dialog: var(--color-gray-100);
   --plt-color-background-error: var(--plt-color-error-bg);
   --plt-color-background-warning: var(--plt-color-warning-bg);
@@ -34,8 +35,7 @@
   --plt-color-button-cancel: var(--plt-color-white-pure);
 
 
-  --plt-color-section-bg: #f9f9f9;
-  --plt-color-disabled: #f0f0f0;
+
   --plt-color-soft-dividers: #ddd;
 
   --plt-color-gray-very-light: #fafafa;
@@ -89,8 +89,6 @@
     --plt-color-text-primary: var(--plt-color-gray-very-light);
     --plt-color-text-secondary: var(--plt-color-gray-light);
     --plt-color-text-hint: var(--plt-color-gray-light);
-
-    --plt-color-disabled: #f0f0f0;
 
   --font-size-base: 100%;
   }
@@ -425,6 +423,10 @@ button[type="button"] {
   transition: opacity 0.2s ease;
 }
 
+.button:active {
+  opacity: 0.8;
+}
+
 .button--primary {
   background: var(--plt-color-primary);
   color: var(--plt-color-white-pure);
@@ -449,10 +451,6 @@ button[type="button"] {
 .button--block {
   display: block;
   width: 100%;
-}
-
-.button:active {
-  opacity: 0.8;
 }
 
 .venue-selection {
@@ -492,7 +490,7 @@ button[type="button"] {
   border-color: var(--plt-color-primary);
 }
 
-#venue-history-container {
+.venue-history-container {
   padding: 20px;
   text-align: center;
   background: var(--plt-color-background-dialog);
@@ -502,13 +500,13 @@ button[type="button"] {
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-#venue-history-container h3 {
+.venue-history-container h3 {
   color: var(--plt-color-text-default);
   margin-bottom: 20px;
 }
 
 /* The list of buttons */
-#venue-history-list {
+.venue-history-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 15px;
@@ -516,7 +514,7 @@ button[type="button"] {
 }
 
 /* Individual Venue Button Styling */
-#venue-history-list button {
+.venue-history-list button {
   background-color: var(--plt-color-primary);
   color: white;
   border: none;
@@ -529,13 +527,13 @@ button[type="button"] {
   border: 3px solid var(--plt-color-primary);
 }
 
-#venue-history-list button:hover {
+.venue-history-list button:hover {
   background-color: white;
   color: var(--plt-color-primary);
   border: 3px solid var(--plt-color-border-med);
 }
 
-#venue-history-list button:active {
+.venue-history-list button:active {
   transform: translateY(0);
 }
 
@@ -765,7 +763,7 @@ button[type="button"] {
 }
 
 .summary-panel {
-  background: var(--plt-color-section-bg);
+  background: var(--plt-colorbackground-section);
   border-radius: 8px;
   border: var(--plt-border-default);
   padding: 15px;

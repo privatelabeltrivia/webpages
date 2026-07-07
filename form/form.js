@@ -1,8 +1,3 @@
-import {
-  insertRegistrationSubmission,
-  insertScoringRoundSubmission,
-} from "../supabase/supabase.js";
-
 // Configuration Constants
 const CONFIG = {
   API_ENDPOINT:
@@ -125,7 +120,9 @@ function renderPage(data) {
       "--plt-color-primary",
       data.themeColor,
     );
+    CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor);
   }
+  
 
   console.log("2. Set Basic Text");
   document.getElementById("venue-name").textContent = data.venueName || "";
@@ -144,8 +141,6 @@ function renderPage(data) {
   console.log("3. Set Images");
   const logoSrc = data.logoSrc || defaultLogoSrc || "";
   CacheManager.set(venueKeys.LOGOSRC, logoSrc);
-
-  CacheManager.set(venueKeys.PRIMARY_COLOR, data.themeColor || "");
 
   const headerLogo = document.getElementById("header-logo");
   if (logoSrc) headerLogo.src = logoSrc;
@@ -411,7 +406,7 @@ async function getFormData() {
     const url = new URL(CONFIG.API_ENDPOINT);
     url.searchParams.append("venueId", venueId);
     url.searchParams.append("round", round);
-    url.searchParams.append("action", "template");
+    url.searchParams.append("action", "form-template");
 
     const response = await fetch(url, {
       method: "GET",
@@ -423,9 +418,11 @@ async function getFormData() {
       throw new Error(`API returned status ${response.status}`);
     }
 
-    appData = await response.json();
-    console.log("Data received from Apps Script:", appData);
+    const responseJson = await response.json();
+    console.log("Data received from Apps Script:", responseJson);
 
+    appData = responseJson.data || {};
+    
     if (appData.isValidVenue) {
       VenueHistory.addVenue(appData.venueId, appData.venueName);
       renderPage(appData);
@@ -460,12 +457,6 @@ function showError(message) {
   errorDiv.className = "alert-banner alert-banner--error";
   errorDiv.textContent = message;
   document.getElementById("main-content").prepend(errorDiv);
-}
-
-// Accessibility Helper
-function setAriaLabel(elementId, label) {
-  const element = document.getElementById(elementId);
-  if (element) element.setAttribute("aria-label", label);
 }
 
 // DOM Creation Helper
@@ -533,6 +524,9 @@ function updateFontSize(className) {
 }
 
 window.updateFontSize = updateFontSize;
+window.filterVenues = filterVenues;
+window.handleVenueSelection = handleVenueSelection;
+window.joinGame = joinGame;
 
 const toggleBtn = document.getElementById("theme-toggle");
 toggleBtn.addEventListener("click", () => {
@@ -1107,7 +1101,7 @@ function getDoubleRound() {
     const valuesOnlyArray = entries.map((entry) => entry[1]);
     // 3. Add to your payload
     const payload = {
-      action: "submit",
+      action: "form-submit",
       timestamp: new Date().toISOString(),
       ssheetid: appData.venueSsheetId,
       venueid: vId,
@@ -1146,7 +1140,7 @@ function getDoubleRound() {
         finalizeSubmission();
       })
       .catch((err) => {
-        console.log("Fetch handled via fallback:", err);
+        console.error(err);
         showError(
           "Submission failed. Please check your connection and try again.",
         );
@@ -1157,17 +1151,30 @@ function getDoubleRound() {
         toggleLoading(false);
       });
 
-    try {
+  
       if (currentRound === 0) {
-        insertRegistrationSubmission(payload);
+        payload.action = "supabase-registration";
       } else {
-        insertScoringRoundSubmission(payload);
+        payload.action = "supabase-roundsubmission";
       }
-      //finalizeSubmission();
-    } catch (err) {
+      fetch(CONFIG.API_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+      .then(() => {
+        console.log("Supabase submission successful.");
+      })
+    .catch((err) =>{
       console.error(err);
-      showError("Submission failed.");
-    }
+      showError("Supabase Submission failed.");
+    })
+    .finally(() => {
+
+    });
 
     console.log("Submitted");
   }
