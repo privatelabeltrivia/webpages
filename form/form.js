@@ -586,7 +586,7 @@ window.addEventListener("load", () => {
     "size-normal",
   );
   document.getElementById("fontSizeSelector").value = savedSize;
-  document.body.classList.add(savedSize);
+  updateFontSize(savedSize);
 });
 
 function toggleVisibility(el, show) {

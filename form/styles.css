@@ -520,10 +520,11 @@ button[type="button"] {
   border: none;
   padding: 15px 10px;
   border-radius: 8px;
+  font-size: 1em;
   font-weight: 600;
   cursor: pointer;
+  word-wrap: break-word;
   transition: transform 0.2s, background-color 0.2s;
-  font-size: 14px;
   border: 3px solid var(--plt-color-primary);
 }
 
